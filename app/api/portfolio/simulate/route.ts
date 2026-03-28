@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { validateApiKey } from "@/lib/api-auth";
 import { calculateFitScore } from "@/lib/fit-score";
 import { buildWhatIfPrompt } from "@/lib/ai/prompts";
 import { getOpenAIClient } from "@/lib/ai/client";
@@ -11,19 +12,9 @@ import type { InvestorProfile, AllocationItem, WhatIfScenario } from "@/lib/type
 
 const profileSchema = z.object({
   experience: z.enum(["none", "basic", "intermediate", "advanced"]),
-  goal: z.enum([
-    "short_term_savings",
-    "inflation_protection",
-    "medium_term_growth",
-    "retirement",
-    "other",
-  ]),
-  horizon: z.enum(["less_than_1yr", "1_to_3yr", "more_than_3yr"]),
+  goal: z.enum(["short_term", "inflation", "growth", "retirement", "other"]),
+  horizon: z.enum(["less_1y", "1_to_3y", "more_3y"]),
   riskTolerance: z.enum(["conservative", "moderate", "aggressive"]),
-  contributionRule: z.enum(["percentage", "fixed"]),
-  contributionAmount: z.number(),
-  contributionFrequency: z.enum(["weekly", "biweekly", "monthly"]),
-  bankConnected: z.boolean(),
 });
 
 const requestSchema = z.object({
@@ -65,6 +56,9 @@ const SCENARIOS: Record<
 };
 
 export async function POST(req: NextRequest) {
+  const authError = validateApiKey(req);
+  if (authError) return authError;
+
   try {
     const body = await req.json();
     const parsed = requestSchema.safeParse(body);
@@ -162,7 +156,6 @@ function shiftToCategory(
 
   if (actualShift <= 0) return allocations;
 
-  // Distribute the reduction proportionally across others
   const othersTotal = others.reduce((s, a) => s + a.percentage, 0);
   const newOthers = others.map((a) => ({
     ...a,
@@ -176,11 +169,8 @@ function shiftToCategory(
     ? { ...existing, percentage: targetNew }
     : { instrumentId: targetId, percentage: targetNew };
 
-  const result = existing
-    ? [...newOthers, updatedTarget]
-    : [...newOthers, updatedTarget];
+  const result = [...newOthers, updatedTarget];
 
-  // Normalize to 100
   const sum = result.reduce((s, a) => s + a.percentage, 0);
   return result.map((a) => ({
     ...a,

@@ -3,13 +3,13 @@
 export type Experience = "none" | "basic" | "intermediate" | "advanced";
 
 export type InvestmentGoal =
-  | "short_term_savings"
-  | "inflation_protection"
-  | "medium_term_growth"
+  | "short_term"
+  | "inflation"
+  | "growth"
   | "retirement"
   | "other";
 
-export type TimeHorizon = "less_than_1yr" | "1_to_3yr" | "more_than_3yr";
+export type TimeHorizon = "less_1y" | "1_to_3y" | "more_3y";
 
 export type RiskTolerance = "conservative" | "moderate" | "aggressive";
 
@@ -22,10 +22,6 @@ export interface InvestorProfile {
   goal: InvestmentGoal;
   horizon: TimeHorizon;
   riskTolerance: RiskTolerance;
-  contributionRule: ContributionRule;
-  contributionAmount: number;
-  contributionFrequency: ContributionFrequency;
-  bankConnected: boolean;
 }
 
 // ─── Instruments ───────────────────────────────────────────────────────────
@@ -42,16 +38,17 @@ export type RiskLevel = "low" | "medium" | "high";
 export interface Instrument {
   id: string;
   name: string;
-  description: string;
+  ticker: string | null;
   category: AssetCategory;
   riskLevel: RiskLevel;
   returns: {
-    oneMonth: number;   // percentage
+    oneMonth: number;
     threeMonths: number;
     oneYear: number;
   };
-  volatility: number;  // historical std dev (percentage)
-  color: string;       // hex for chart
+  volatility: number;
+  isActive: boolean;
+  color?: string;
 }
 
 // ─── Portfolio ──────────────────────────────────────────────────────────────
@@ -100,17 +97,9 @@ export interface WhatIfScenario {
   label: string;
   description: string;
   impact: {
-    returnOneYear: number;   // delta
-    volatility: number;      // delta
+    returnOneYear: number;
+    volatility: number;
     fitScoreDelta: number;
   };
   narrative: string;
-}
-
-// ─── Session ───────────────────────────────────────────────────────────────
-
-export interface AppSession {
-  profile: InvestorProfile | null;
-  portfolio: Portfolio | null;
-  fitScore: FitScoreResult | null;
 }

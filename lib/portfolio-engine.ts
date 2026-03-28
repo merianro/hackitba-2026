@@ -8,9 +8,8 @@ import { getAllInstruments } from "./market-data";
 export function suggestPortfolio(profile: InvestorProfile): Portfolio {
   const { riskTolerance, goal, horizon } = profile;
 
-  // Conservative profiles
   if (riskTolerance === "conservative") {
-    if (goal === "short_term_savings" || horizon === "less_than_1yr") {
+    if (goal === "short_term" || horizon === "less_1y") {
       return makePortfolio([
         { instrumentId: "mm_ars", percentage: 50 },
         { instrumentId: "dolar_mep", percentage: 35 },
@@ -25,9 +24,8 @@ export function suggestPortfolio(profile: InvestorProfile): Portfolio {
     ]);
   }
 
-  // Moderate profiles
   if (riskTolerance === "moderate") {
-    if (goal === "inflation_protection") {
+    if (goal === "inflation") {
       return makePortfolio([
         { instrumentId: "dolar_mep", percentage: 30 },
         { instrumentId: "on_usd", percentage: 20 },
@@ -45,8 +43,8 @@ export function suggestPortfolio(profile: InvestorProfile): Portfolio {
     ]);
   }
 
-  // Aggressive profiles
-  if (goal === "retirement" && horizon === "more_than_3yr") {
+  // Aggressive
+  if (goal === "retirement" && horizon === "more_3y") {
     return makePortfolio([
       { instrumentId: "cedears", percentage: 35 },
       { instrumentId: "rv_acciones", percentage: 25 },
@@ -73,12 +71,10 @@ function makePortfolio(allocations: AllocationItem[]): Portfolio {
   return { allocations, source: "suggested" };
 }
 
-/** Returns list of all instrument IDs for building the full UI selector */
 export function getAllInstrumentIds(): string[] {
   return getAllInstruments().map((i) => i.id);
 }
 
-/** Normalizes allocations so percentages sum to exactly 100 */
 export function normalizeAllocations(
   allocations: AllocationItem[]
 ): AllocationItem[] {

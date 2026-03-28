@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { validateApiKey } from "@/lib/api-auth";
 import { calculateFitScore } from "@/lib/fit-score";
 import type { InvestorProfile, AllocationItem } from "@/lib/types";
 
@@ -11,24 +12,17 @@ const allocationSchema = z.object({
 const requestSchema = z.object({
   profile: z.object({
     experience: z.enum(["none", "basic", "intermediate", "advanced"]),
-    goal: z.enum([
-      "short_term_savings",
-      "inflation_protection",
-      "medium_term_growth",
-      "retirement",
-      "other",
-    ]),
-    horizon: z.enum(["less_than_1yr", "1_to_3yr", "more_than_3yr"]),
+    goal: z.enum(["short_term", "inflation", "growth", "retirement", "other"]),
+    horizon: z.enum(["less_1y", "1_to_3y", "more_3y"]),
     riskTolerance: z.enum(["conservative", "moderate", "aggressive"]),
-    contributionRule: z.enum(["percentage", "fixed"]),
-    contributionAmount: z.number(),
-    contributionFrequency: z.enum(["weekly", "biweekly", "monthly"]),
-    bankConnected: z.boolean(),
   }),
   allocations: z.array(allocationSchema).min(1),
 });
 
 export async function POST(req: NextRequest) {
+  const authError = validateApiKey(req);
+  if (authError) return authError;
+
   try {
     const body = await req.json();
     const parsed = requestSchema.safeParse(body);
