@@ -7,35 +7,36 @@
 
 ## 1. Vision del producto
 
-Una plataforma de smart finance que permite al usuario retail crear su propia cartera de inversion personalizada. El flujo combina perfilado del inversor, recomendacion inicial, construccion interactiva de la cartera y validacion inteligente de su coherencia con el perfil y objetivo definidos.
+Una plataforma de smart finance que ayuda al usuario retail a convertir la inversion en un habito sostenible, mediante una estrategia personalizada, automatizacion de aportes y validacion inteligente de su cartera.
 
-El diferencial no es solo recomendar: es dejar al usuario construir, entender y confiar en lo que esta haciendo.
+El producto combina perfilado del inversor, definicion de una estrategia acorde a su objetivo y herramientas de seguimiento que facilitan la constancia en el tiempo.
+
+El diferencial no es solo recomendar una cartera: es ayudar al usuario a sostener buenas decisiones de inversion de forma simple, consistente y entendible.
 
 ---
 
 ## 2. Problema que resuelve
 
-Las personas que quieren invertir encuentran dos extremos:
+Muchas personas quieren invertir, pero no logran sostener el habito en el tiempo.
 
-- Plataformas simples que dan recomendaciones rigidas sin explicacion.
-- Herramientas potentes pensadas para usuarios con experiencia financiera.
+El principal problema no es solamente elegir una cartera, sino mantener una conducta de inversion constante. En la practica, muchas decisiones de inversion quedan libradas a la voluntad del momento, al recuerdo de hacerlo o a si "sobra plata" ese mes. Eso genera aportes irregulares, postergacion y abandono temprano.
 
-Esa brecha genera confusion, baja confianza, malas decisiones y poca adopcion sostenida de habitos de inversion.
+La falta de constancia termina afectando mas el resultado que la falta de informacion. Incluso cuando una persona entiende que deberia invertir, suele no contar con una forma simple de automatizar ese comportamiento y sostenerlo como parte de su rutina financiera.
 
-El usuario necesita una experiencia que lo ayude a empezar aunque no sepa de finanzas, que le de control progresivo, y que le explique las consecuencias de cada decision en lenguaje simple.
+La app busca resolver ese problema ayudando al usuario a definir una estrategia acorde a su perfil y convirtiendo la inversion en un habito mediante automatizacion, seguimiento y validacion inteligente de la cartera elegida.
 
 ---
 
 ## 3. Usuario objetivo
 
-Hay dos perfiles centrales, cubiertos por el mismo flujo:
+Hay dos perfiles centrales, cubiertos por el mismo producto pero con distinta necesidad principal:
 
 | Perfil | Descripcion |
 |--------|-------------|
-| Inversor nuevo | No tiene experiencia. Quiere empezar a ahorrar o invertir sin saber por donde. Necesita guia y educacion implicita en la experiencia. |
-| Inversor con nocion | Ya invierte algo o conoce conceptos basicos. Quiere mas control, personalizacion y comprension real de su estrategia. |
+| Inversor nuevo | Quiere empezar a invertir, pero no sabe como definir una cartera ni sostener el habito por su cuenta. Necesita una experiencia simple, guiada y automatizada que reduzca la friccion y lo ayude a invertir con constancia. |
+| Inversor con nocion | Ya tiene conocimientos basicos o experiencia previa. Busca una estrategia alineada a su perfil, mas visibilidad sobre lo que esta haciendo y herramientas para automatizar y sostener sus aportes en el tiempo. |
 
-Ambos perfiles llegan al mismo producto pero con distinta profundidad de interaccion.
+Ambos perfiles comparten la necesidad de invertir con mayor constancia, pero difieren en el nivel de autonomia, criterio y control que esperan del producto.
 
 ---
 
@@ -43,15 +44,22 @@ Ambos perfiles llegan al mismo producto pero con distinta profundidad de interac
 
 ### 4.1 Onboarding y perfilado
 
-El usuario responde un cuestionario estructurado que determina su perfil de inversor. Las preguntas recogen:
+El onboarding combina perfilado del inversor con la configuracion inicial del habito de inversion. Durante este paso, el usuario responde un cuestionario estructurado y define como se realizaran sus aportes automaticos.
+
+Las preguntas y configuraciones recogen:
 
 - Experiencia previa en inversiones.
-- Objetivo financiero: ahorro de corto plazo, proteccion contra inflacion, crecimiento de mediano plazo, jubilacion u otro.
+- Objetivo financiero: ahorro de corto plazo, proteccion contra inflacion, crecimiento de mediano plazo, jubilacion y/u otro.
 - Horizonte temporal: menos de 1 año, 1 a 3 años, mas de 3 años.
 - Tolerancia al riesgo: conservador, moderado, agresivo.
-- Capacidad de aporte: porcentaje del ingreso mensual o monto fijo.
+- Regla de aporte: porcentaje del ingreso mensual o monto fijo.
+- Frecuencia del aporte: semanal, quincenal o mensual.
+- Banco o cuenta origen desde donde se debitaran los fondos.
+- Autorizacion del debito automatico para ejecutar los aportes programados.
 
-Al finalizar el onboarding, el sistema genera un perfil del inversor y lo persiste para todas las evaluaciones posteriores.
+La vinculacion bancaria ocurre dentro del onboarding mediante una experiencia guiada y visualmente similar a una conexion real de cuenta. En el MVP esta experiencia se encuentra mockeada y simula la seleccion del banco, la asociacion de la cuenta y la autorizacion del debito, sin integracion bancaria real ni movimiento real de dinero.
+
+Al finalizar el onboarding, el sistema genera un perfil del inversor, registra la configuracion de aportes y lo persiste para todas las evaluaciones posteriores.
 
 ### 4.2 Cartera sugerida
 
