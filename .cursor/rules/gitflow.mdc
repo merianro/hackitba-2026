@@ -1,0 +1,73 @@
+---
+description: Git branch management following Gitflow conventions
+alwaysApply: true
+---
+
+# Gitflow Branch Management
+
+Este proyecto sigue Gitflow estrictamente. Nunca trabajar directamente sobre `master` o `develop`.
+
+## Estructura de ramas
+
+| Rama | Proposito |
+|------|-----------|
+| `master` | Solo codigo en produccion. Se toca unicamente via merge desde `release/*` o `hotfix/*`. |
+| `develop` | Integracion continua. Base para nuevas features. |
+| `feature/*` | Una feature o tarea. Sale de `develop`, vuelve a `develop`. |
+| `release/*` | Preparacion de una version. Sale de `develop`, mergea a `master` y `develop`. |
+| `hotfix/*` | Fix urgente sobre produccion. Sale de `master`, mergea a `master` y `develop`. |
+
+## Convenciones de nombres
+
+```
+feature/nombre-descriptivo
+release/1.0.0
+hotfix/descripcion-del-bug
+```
+
+## Flujo para nueva feature
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/nombre-descriptivo
+# ... trabajo ...
+git checkout develop
+git merge --no-ff feature/nombre-descriptivo
+git branch -d feature/nombre-descriptivo
+```
+
+## Flujo para release
+
+```bash
+git checkout develop
+git checkout -b release/1.0.0
+# ajustes de version, changelog, etc.
+git checkout master
+git merge --no-ff release/1.0.0
+git tag -a v1.0.0
+git checkout develop
+git merge --no-ff release/1.0.0
+git branch -d release/1.0.0
+```
+
+## Flujo para hotfix
+
+```bash
+git checkout master
+git checkout -b hotfix/descripcion
+# fix...
+git checkout master
+git merge --no-ff hotfix/descripcion
+git tag -a v1.0.1
+git checkout develop
+git merge --no-ff hotfix/descripcion
+git branch -d hotfix/descripcion
+```
+
+## Reglas
+
+- Usar siempre `--no-ff` en merges para preservar historia.
+- No hacer commits directamente en `master` ni `develop`.
+- Cada feature debe tener su propia rama.
+- Los tags de version van siempre en `master`.
