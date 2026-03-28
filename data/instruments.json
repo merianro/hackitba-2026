@@ -1,0 +1,82 @@
+[
+  {
+    "id": "mm_ars",
+    "name": "FCI Money Market",
+    "description": "Fondo de mercado monetario en pesos. Alta liquidez, retorno estable atado a tasas de política monetaria.",
+    "category": "renta_fija",
+    "riskLevel": "low",
+    "returns": { "oneMonth": 7.2, "threeMonths": 22.0, "oneYear": 98.0 },
+    "volatility": 0.4,
+    "color": "#55c5ff"
+  },
+  {
+    "id": "rf_soberana",
+    "name": "Renta Fija Soberana",
+    "description": "Bonos del Tesoro Nacional en pesos. Rendimiento ajustado por CER o tasa fija.",
+    "category": "renta_fija",
+    "riskLevel": "medium",
+    "returns": { "oneMonth": 8.5, "threeMonths": 27.0, "oneYear": 115.0 },
+    "volatility": 4.2,
+    "color": "#7dd3fc"
+  },
+  {
+    "id": "dolar_mep",
+    "name": "FCI Dólar MEP",
+    "description": "Fondo en dólares que opera al tipo de cambio MEP. Protección frente a devaluación.",
+    "category": "dolar",
+    "riskLevel": "low",
+    "returns": { "oneMonth": 0.6, "threeMonths": 1.9, "oneYear": 7.5 },
+    "volatility": 1.8,
+    "color": "#5fe3a1"
+  },
+  {
+    "id": "on_usd",
+    "name": "Obligaciones Negociables USD",
+    "description": "Deuda corporativa en dólares de empresas argentinas. Rendimiento superior al plazo fijo en USD.",
+    "category": "dolar",
+    "riskLevel": "medium",
+    "returns": { "oneMonth": 0.9, "threeMonths": 2.8, "oneYear": 11.5 },
+    "volatility": 3.1,
+    "color": "#34d399"
+  },
+  {
+    "id": "fci_mixto",
+    "name": "FCI Mixto Equilibrado",
+    "description": "Cartera diversificada entre renta fija y variable. Busca equilibrio entre rendimiento y riesgo.",
+    "category": "mixto",
+    "riskLevel": "medium",
+    "returns": { "oneMonth": 9.2, "threeMonths": 30.0, "oneYear": 128.0 },
+    "volatility": 6.8,
+    "color": "#a78bfa"
+  },
+  {
+    "id": "rv_acciones",
+    "name": "Acciones Argentinas",
+    "description": "Acciones de empresas líderes del mercado local. Alta volatilidad con potencial de retorno significativo.",
+    "category": "renta_variable",
+    "riskLevel": "high",
+    "returns": { "oneMonth": 12.0, "threeMonths": 40.0, "oneYear": 165.0 },
+    "volatility": 18.5,
+    "color": "#f6c453"
+  },
+  {
+    "id": "cedears",
+    "name": "CEDEARs Diversificados",
+    "description": "Certificados de Depósito Argentinos sobre acciones del exterior (Apple, Google, etc.).",
+    "category": "renta_variable",
+    "riskLevel": "high",
+    "returns": { "oneMonth": 4.5, "threeMonths": 14.0, "oneYear": 62.0 },
+    "volatility": 14.2,
+    "color": "#fb923c"
+  },
+  {
+    "id": "commodities",
+    "name": "Commodities & Agro",
+    "description": "Exposición a materias primas (soja, petróleo, oro) a través de instrumentos del mercado local.",
+    "category": "commodities",
+    "riskLevel": "high",
+    "returns": { "oneMonth": 3.2, "threeMonths": 10.5, "oneYear": 44.0 },
+    "volatility": 16.0,
+    "color": "#f87171"
+  }
+]
