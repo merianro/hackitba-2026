@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Smart Portfolio Builder | HackITBA 2026",
+  title: "Smart Finance Dashboard | HackITBA 2026",
   description:
-    "Armá tu cartera de inversión personalizada con inteligencia artificial. Perfilado, cartera sugerida, Portfolio Doctor y simulador what-if.",
+    "Dashboard de tu cartera de inversión inteligente. Portfolio Fit Score, insights y aportes automáticos.",
 };
 
 export default function RootLayout({

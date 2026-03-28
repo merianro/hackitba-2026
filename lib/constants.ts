@@ -18,17 +18,17 @@ export const EXPERIENCE_LABELS: Record<Experience, string> = {
 };
 
 export const GOAL_LABELS: Record<InvestmentGoal, string> = {
-  short_term_savings: "Ahorrar a corto plazo",
-  inflation_protection: "Protegerme de la inflación",
-  medium_term_growth: "Hacer crecer mi dinero",
+  short_term: "Ahorrar a corto plazo",
+  inflation: "Protegerme de la inflación",
+  growth: "Hacer crecer mi dinero",
   retirement: "Planificar mi jubilación",
   other: "Otro objetivo",
 };
 
 export const HORIZON_LABELS: Record<TimeHorizon, string> = {
-  less_than_1yr: "Menos de 1 año",
-  "1_to_3yr": "Entre 1 y 3 años",
-  more_than_3yr: "Más de 3 años",
+  less_1y: "Menos de 1 año",
+  "1_to_3y": "Entre 1 y 3 años",
+  more_3y: "Más de 3 años",
 };
 
 export const RISK_LABELS: Record<RiskTolerance, string> = {

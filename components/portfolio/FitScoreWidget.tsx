@@ -10,17 +10,17 @@ interface FitScoreWidgetProps {
 }
 
 const LABEL_COLORS: Record<string, string> = {
-  "Muy alineado": "text-emerald-400",
-  Alineado: "text-sky-400",
-  "Moderadamente fuera de perfil": "text-amber-400",
-  "Fuera de perfil": "text-red-400",
+  "Muy alineado": "text-emerald-600",
+  Alineado: "text-sky-600",
+  "Moderadamente fuera de perfil": "text-amber-600",
+  "Fuera de perfil": "text-red-600",
 };
 
 const RING_COLORS: Record<string, string> = {
-  "Muy alineado": "#34d399",
-  Alineado: "#38bdf8",
-  "Moderadamente fuera de perfil": "#fbbf24",
-  "Fuera de perfil": "#f87171",
+  "Muy alineado": "#059669",
+  Alineado: "#0284c7",
+  "Moderadamente fuera de perfil": "#d97706",
+  "Fuera de perfil": "#dc2626",
 };
 
 function ScoreRing({
@@ -35,7 +35,7 @@ function ScoreRing({
   const r = 42;
   const circ = 2 * Math.PI * r;
   const filled = (score / 100) * circ;
-  const color = RING_COLORS[label] ?? "#38bdf8";
+  const color = RING_COLORS[label] ?? "#0284c7";
 
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" className="rotate-[-90deg]">
@@ -44,7 +44,7 @@ function ScoreRing({
         cy="50"
         r={r}
         fill="none"
-        stroke="rgba(255,255,255,0.08)"
+        stroke="#e2e8f0"
         strokeWidth="9"
       />
       <circle
@@ -63,13 +63,12 @@ function ScoreRing({
         x="50"
         y="54"
         textAnchor="middle"
-        className="fill-white"
         style={{
           fontSize: 22,
           fontWeight: 700,
           transform: "rotate(90deg)",
           transformOrigin: "50px 50px",
-          fill: "#fff",
+          fill: "#1e293b",
         }}
       >
         {score}
@@ -87,11 +86,11 @@ function BreakdownBar({
 }) {
   return (
     <div>
-      <div className="flex justify-between text-xs text-slate-400 mb-1">
+      <div className="flex justify-between text-xs text-gray-500 mb-1">
         <span>{label}</span>
-        <span className="text-white font-medium">{value}</span>
+        <span className="text-gray-900 font-medium">{value}</span>
       </div>
-      <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full bg-sky-500 transition-all duration-500"
           style={{ width: `${value}%` }}
@@ -108,18 +107,18 @@ export function FitScoreWidget({
 }: FitScoreWidgetProps) {
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 animate-pulse flex flex-col items-center gap-4">
-        <div className="w-28 h-28 rounded-full bg-white/10" />
-        <div className="h-4 w-32 rounded bg-white/10" />
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 animate-pulse flex flex-col items-center gap-4">
+        <div className="w-28 h-28 rounded-full bg-gray-100" />
+        <div className="h-4 w-32 rounded bg-gray-100" />
       </div>
     );
   }
 
   if (!result) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 flex flex-col items-center gap-3 text-center">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 flex flex-col items-center gap-3 text-center">
         <div className="text-3xl">📊</div>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-gray-500">
           Tu Portfolio Fit Score aparecerá aquí mientras armás tu cartera.
         </p>
       </div>
@@ -127,8 +126,8 @@ export function FitScoreWidget({
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-      <p className="text-xs text-slate-500 uppercase tracking-widest mb-4 font-semibold">
+    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+      <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-semibold">
         Portfolio Fit Score
       </p>
 
@@ -137,7 +136,7 @@ export function FitScoreWidget({
         <p
           className={clsx(
             "text-sm font-bold",
-            LABEL_COLORS[result.label] ?? "text-sky-400"
+            LABEL_COLORS[result.label] ?? "text-sky-600"
           )}
         >
           {result.label}
@@ -145,7 +144,7 @@ export function FitScoreWidget({
       </div>
 
       {!compact && (
-        <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
+        <div className="flex flex-col gap-3 border-t border-gray-100 pt-4">
           <BreakdownBar
             label="Alineación de riesgo"
             value={result.breakdown.riskAlignment}

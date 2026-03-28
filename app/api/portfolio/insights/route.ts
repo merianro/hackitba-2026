@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { validateApiKey } from "@/lib/api-auth";
 import { calculateFitScore } from "@/lib/fit-score";
 import { buildInsightsPrompt } from "@/lib/ai/prompts";
 import { getOpenAIClient } from "@/lib/ai/client";
@@ -10,19 +11,9 @@ import type { AssetCategory } from "@/lib/types";
 const requestSchema = z.object({
   profile: z.object({
     experience: z.enum(["none", "basic", "intermediate", "advanced"]),
-    goal: z.enum([
-      "short_term_savings",
-      "inflation_protection",
-      "medium_term_growth",
-      "retirement",
-      "other",
-    ]),
-    horizon: z.enum(["less_than_1yr", "1_to_3yr", "more_than_3yr"]),
+    goal: z.enum(["short_term", "inflation", "growth", "retirement", "other"]),
+    horizon: z.enum(["less_1y", "1_to_3y", "more_3y"]),
     riskTolerance: z.enum(["conservative", "moderate", "aggressive"]),
-    contributionRule: z.enum(["percentage", "fixed"]),
-    contributionAmount: z.number(),
-    contributionFrequency: z.enum(["weekly", "biweekly", "monthly"]),
-    bankConnected: z.boolean(),
   }),
   allocations: z.array(
     z.object({ instrumentId: z.string(), percentage: z.number() })
@@ -30,6 +21,9 @@ const requestSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const authError = validateApiKey(req);
+  if (authError) return authError;
+
   try {
     const body = await req.json();
     const parsed = requestSchema.safeParse(body);
@@ -88,7 +82,6 @@ function generateDeterministicInsights(
 ): PortfolioInsight[] {
   const insights: PortfolioInsight[] = [];
 
-  // Category concentrations
   const categoryMap: Partial<Record<AssetCategory, number>> = {};
   for (const alloc of allocations) {
     const inst = getInstrumentById(alloc.instrumentId);
@@ -112,7 +105,7 @@ function generateDeterministicInsights(
   if (profile.riskTolerance === "conservative" && rvPct > 30) {
     insights.push({
       type: "warning",
-      message: `Con un perfil conservador, tu exposición a renta variable (${rvPct}%) es más alta de lo recomendado. Podrías sentirte incómodo ante caídas del mercado.`,
+      message: `Con un perfil conservador, tu exposición a renta variable (${rvPct}%) es más alta de lo recomendado.`,
     });
   }
 
@@ -123,7 +116,7 @@ function generateDeterministicInsights(
     });
   }
 
-  if (profile.horizon === "less_than_1yr" && rvPct > 15) {
+  if (profile.horizon === "less_1y" && rvPct > 15) {
     insights.push({
       type: "warning",
       message:
@@ -142,7 +135,7 @@ function generateDeterministicInsights(
     insights.push({
       type: "positive",
       message:
-        "Tu cartera está bien alineada con tu perfil de inversor. ¡Buen trabajo eligiendo una composición coherente con tus objetivos!",
+        "Tu cartera está bien alineada con tu perfil de inversor. ¡Buen trabajo!",
     });
   }
 
@@ -154,6 +147,5 @@ function generateDeterministicInsights(
     });
   }
 
-  // Return at most 3
   return insights.slice(0, 3);
 }
