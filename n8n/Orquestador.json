@@ -5,27 +5,16 @@
       "parameters": {
         "workflowInputs": {
           "values": [
-            {
-              "name": "phone_number_id"
-            },
-            {
-              "name": "user_name"
-            },
-            {
-              "name": "sender_phone_number"
-            },
-            {
-              "name": "message"
-            }
+            {"name": "phone_number_id"},
+            {"name": "user_name"},
+            {"name": "sender_phone_number"},
+            {"name": "message"}
           ]
         }
       },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
-      "position": [
-        -464,
-        0
-      ],
+      "position": [-464, 0],
       "id": "c511215a-9a26-4a97-90af-e982522b1af4",
       "name": "When Executed by Another Workflow"
     },
@@ -35,47 +24,29 @@
           "values": [
             {
               "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.conversationStatus }}",
-                    "rightValue": "={{0}}",
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    },
-                    "id": "5196fce1-10b1-4767-8155-9adc5b40a134"
-                  }
-                ],
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"leftValue": "={{ $json.conversationStatus }}", "rightValue": "={{0}}", "operator": {"type": "number", "operation": "equals"}, "id": "5196fce1-10b1-4767-8155-9adc5b40a134"}],
                 "combinator": "and"
               }
             },
             {
               "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "d51d53f3-d5cd-425f-aa36-aaaf7b2837f5",
-                    "leftValue": "={{ $json.conversationStatus }}",
-                    "rightValue": 1,
-                    "operator": {
-                      "type": "number",
-                      "operation": "equals"
-                    }
-                  }
-                ],
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "d51d53f3-d5cd-425f-aa36-aaaf7b2837f5", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 1, "operator": {"type": "number", "operation": "equals"}}],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [
+                  {"id": "orq-onboarding-min", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 2, "operator": {"type": "number", "operation": "gte"}},
+                  {"id": "orq-onboarding-max", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 8, "operator": {"type": "number", "operation": "lte"}}
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "on_boarding_en_progreso"
             }
           ]
         },
@@ -83,10 +54,7 @@
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
-      "position": [
-        736,
-        256
-      ],
+      "position": [736, 256],
       "id": "15b55805-bb68-4e3f-a037-e1f6af83c4b2",
       "name": "Switch"
     },
@@ -102,22 +70,14 @@
         },
         "matchType": "allConditions",
         "filters": {
-          "conditions": [
-            {
-              "keyName": "sender_phone_number",
-              "keyValue": "={{ $json.sender_phone_number }}"
-            }
-          ]
+          "conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]
         },
         "limit": 1,
         "orderBy": true
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
-      "position": [
-        -240,
-        256
-      ],
+      "position": [-240, 256],
       "id": "3921ab20-e110-42e7-a3ed-a91088581465",
       "name": "Obtener Conversation Status",
       "alwaysOutputData": true
@@ -134,36 +94,23 @@
         },
         "matchType": "allConditions",
         "filters": {
-          "conditions": [
-            {
-              "keyName": "sender_phone_number",
-              "keyValue": "={{ $json.sender_phone_number }}"
-            }
-          ]
+          "conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]
         },
         "limit": 1,
         "orderBy": true
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
-      "position": [
-        -240,
-        480
-      ],
+      "position": [-240, 480],
       "id": "2574fc20-4c68-4302-8fd3-80c2c96b3739",
       "name": "Obtener Contexto de Conversacion",
       "alwaysOutputData": true
     },
     {
-      "parameters": {
-        "numberInputs": 3
-      },
+      "parameters": {"numberInputs": 3},
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
-      "position": [
-        64,
-        256
-      ],
+      "position": [64, 256],
       "id": "ebd9d114-0d76-4d2c-a90f-6c2fd1e17e4f",
       "name": "Merge"
     },
@@ -173,25 +120,19 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        320,
-        272
-      ],
+      "position": [320, 272],
       "id": "7a5ab917-165e-44b8-b88b-fd3d56c07dff",
       "name": "Agregar Status de Conversacion"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Role & Objective\n\nYou are a financial assistant specialized in fintech customer support, designed to respond to user queries within a financial application.\n\nYour primary objective is to:\n\nRetrieve and interpret relevant user-specific data from available Supabase databases (via provided tools)\nDeliver clear, accurate, and personalized financial information\nFormat responses optimized for WhatsApp messaging\n\nContext\nThe user message is:{{ $('Switch').item.json.message }}\nThe conversation context is:{{ $('Switch').item.json.context }}\nYou are interacting with end users of a financial app (likely non-experts in finance)\nUsers may ask about balances, investments, transactions, or recommendations\nYou have access to structured data through Supabase tools\nResponse Methodology (Step-by-Step Thinking)\nUnderstand the Query\nIdentify the user’s intent (e.g., balance check, investment performance, guidance)\nRetrieve Relevant Data\nUse available tools to fetch user-specific information from Supabase\nInterpret & Simplify\nTranslate raw data into clear, meaningful insights\nAvoid technical jargon unless necessary\nCompose WhatsApp-Optimized Response\nKeep it concise (50–120 words)\nUse short paragraphs or bullet points\nPrioritize clarity and readability on mobile\nResponse Guidelines\nTone: Friendly, clear, and trustworthy (like a helpful financial advisor)\nStyle: Conversational but professional\nPersonalization: Always refer to the user’s specific data when available\nClarity over complexity: Replace technical terms with simple explanations\nAction-oriented: When relevant, suggest next steps or insights\nOutput Format (WhatsApp Style)\n\nStructure your response like this:\n\nGreeting (optional, natural)\nKey information (short explanation)\nBullet points (if multiple data points)\nOptional suggestion or insight\nExample Output\n\nHola 👋\n\nTu inversión actual en el portafolio es de $125,000 ARS, con una ganancia del +8.2% este mes 📈\n\n• CEDEARs: $80,000\n• Bonos: $30,000\n• Efectivo: $15,000\n\n💡 Sugerencia: podrías diversificar un poco más en renta fija para reducir volatilidad. {{ $json.message }}",
+        "text": "=Role & Objective\n\nYou are a financial assistant specialized in fintech customer support, designed to respond to user queries within a financial application.\n\nYour primary objective is to:\n\nRetrieve and interpret relevant user-specific data from available Supabase databases (via provided tools)\nDeliver clear, accurate, and personalized financial information\nFormat responses optimized for WhatsApp messaging\n\nContext\nThe user message is:{{ $json.message }}\nThe conversation context is:{{ $json.context }}\nYou are interacting with end users of a financial app (likely non-experts in finance)\nUsers may ask about balances, investments, transactions, or recommendations\nYou have access to structured data through Supabase tools\nResponse Methodology (Step-by-Step Thinking)\nUnderstand the Query\nIdentify the user's intent (e.g., balance check, investment performance, guidance)\nRetrieve Relevant Data\nUse available tools to fetch user-specific information from Supabase\nInterpret & Simplify\nTranslate raw data into clear, meaningful insights\nAvoid technical jargon unless necessary\nCompose WhatsApp-Optimized Response\nKeep it concise (50–120 words)\nUse short paragraphs or bullet points\nPrioritize clarity and readability on mobile\nResponse Guidelines\nTone: Friendly, clear, and trustworthy (like a helpful financial advisor)\nStyle: Conversational but professional\nPersonalization: Always refer to the user's specific data when available\nClarity over complexity: Replace technical terms with simple explanations\nAction-oriented: When relevant, suggest next steps or insights\nOutput Format (WhatsApp Style)\n\nStructure your response like this:\n\nGreeting (optional, natural)\nKey information (short explanation)\nBullet points (if multiple data points)\nOptional suggestion or insight\nExample Output\n\nHola 👋\n\nTu inversión actual en el portafolio es de $125,000 ARS, con una ganancia del +8.2% este mes 📈\n\n• CEDEARs: $80,000\n• Bonos: $30,000\n• Efectivo: $15,000\n\n💡 Sugerencia: podrías diversificar un poco más en renta fija para reducir volatilidad. {{ $json.message }}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [
-        1232,
-        528
-      ],
+      "position": [1232, 528],
       "id": "93cc7237-9568-4e14-8d4a-bdedab6abd26",
       "name": "AI Agent"
     },
@@ -199,74 +140,32 @@
       "parameters": {
         "assignments": {
           "assignments": [
-            {
-              "id": "24725f74-95ce-4fca-ae11-3ca6705d3179",
-              "name": "phone_number_id",
-              "value": "={{ $json.phone_number_id }}",
-              "type": "string"
-            },
-            {
-              "id": "288bd66e-0ce3-48b8-9066-ad4dbd04f05d",
-              "name": "user_name",
-              "value": "={{ $json.user_name }}",
-              "type": "string"
-            },
-            {
-              "id": "3eaaa7e3-025c-4ee6-aa6b-41e45dbbc811",
-              "name": "sender_phone_number",
-              "value": "={{ $json.sender_phone_number }}",
-              "type": "number"
-            },
-            {
-              "id": "32241764-099d-4575-983e-4fe37f6da271",
-              "name": "message",
-              "value": "={{ $json.message }}",
-              "type": "string"
-            },
-            {
-              "id": "0f2fc6cd-0837-4214-bd4f-db91a63cc4e4",
-              "name": "conversationStatus",
-              "value": "={{ $json.conversationStatus }}",
-              "type": "number"
-            },
-            {
-              "id": "cf4bffb6-7baf-44d6-8a73-63506f77095b",
-              "name": "context",
-              "value": "={{ $json.context }}",
-              "type": "string"
-            }
+            {"id": "24725f74-95ce-4fca-ae11-3ca6705d3179", "name": "phone_number_id", "value": "={{ $json.phone_number_id }}", "type": "string"},
+            {"id": "288bd66e-0ce3-48b8-9066-ad4dbd04f05d", "name": "user_name", "value": "={{ $json.user_name }}", "type": "string"},
+            {"id": "3eaaa7e3-025c-4ee6-aa6b-41e45dbbc811", "name": "sender_phone_number", "value": "={{ String($json.sender_phone_number) }}", "type": "string"},
+            {"id": "32241764-099d-4575-983e-4fe37f6da271", "name": "message", "value": "={{ $json.message }}", "type": "string"},
+            {"id": "0f2fc6cd-0837-4214-bd4f-db91a63cc4e4", "name": "conversationStatus", "value": "={{ $json.conversationStatus }}", "type": "number"},
+            {"id": "cf4bffb6-7baf-44d6-8a73-63506f77095b", "name": "context", "value": "={{ $json.context }}", "type": "string"}
           ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [
-        528,
-        272
-      ],
+      "position": [528, 272],
       "id": "0f50430c-7980-4158-9d99-4159c92379b9",
       "name": "Filtrar info"
     },
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
           "conditions": [
             {
               "id": "02b86ff9-3671-4c26-bef0-8de7f05689ae",
               "leftValue": "={{ $json.registered }}",
               "rightValue": false,
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
+              "operator": {"type": "boolean", "operation": "true", "singleValue": true}
             }
           ],
           "combinator": "and"
@@ -275,10 +174,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [
-        1424,
-        144
-      ],
+      "position": [1424, 144],
       "id": "ff0a22a0-6c5a-4707-a108-1aaea48c2c7a",
       "name": "If1"
     },
@@ -293,21 +189,13 @@
           "cachedResultUrl": "/projects/3e5Y7vDESO0WK5mJ/datatables/5h9tjzVEqnrfTQ3J"
         },
         "filters": {
-          "conditions": [
-            {
-              "keyName": "sender_phone_number",
-              "keyValue": "={{ $json.sender_phone_number }}"
-            }
-          ]
+          "conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]
         },
         "limit": 1
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
-      "position": [
-        1008,
-        144
-      ],
+      "position": [1008, 144],
       "id": "d2d51360-f700-4937-8e70-60f8d4bbd7f2",
       "name": "Obtener si el usuario esta registrado",
       "alwaysOutputData": true
@@ -318,36 +206,23 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1216,
-        144
-      ],
+      "position": [1216, 144],
       "id": "aea68073-8019-4595-9c78-cb9a62f0973b",
       "name": "Registrado?"
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "gpt-5-mini"
-        },
+        "model": {"__rl": true, "mode": "list", "value": "gpt-5-mini"},
         "builtInTools": {},
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
-      "position": [
-        1104,
-        736
-      ],
+      "position": [1104, 736],
       "id": "fbe49f47-edb5-402f-9ae3-70f4e100143f",
       "name": "OpenAI Chat Model",
       "credentials": {
-        "openAiApi": {
-          "id": "4B8Brz9ww797GLqT",
-          "name": "OpenAi account"
-        }
+        "openAiApi": {"id": "4B8Brz9ww797GLqT", "name": "OpenAi account"}
       }
     },
     {
@@ -362,40 +237,15 @@
         },
         "matchType": "allConditions",
         "filters": {
-          "conditions": [
-            {
-              "keyName": "sender_phone_number",
-              "keyValue": "={{ $json.sender_phone_number }}"
-            }
-          ]
+          "conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]
         },
         "columns": {
           "mappingMode": "defineBelow",
-          "value": {
-            "conversationStatus": 1
-          },
+          "value": {"conversationStatus": 1},
           "matchingColumns": [],
           "schema": [
-            {
-              "id": "sender_phone_number",
-              "displayName": "sender_phone_number",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "readOnly": false,
-              "removed": true
-            },
-            {
-              "id": "conversationStatus",
-              "displayName": "conversationStatus",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "readOnly": false,
-              "removed": false
-            }
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
@@ -404,10 +254,7 @@
       },
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
-      "position": [
-        1840,
-        256
-      ],
+      "position": [1840, 256],
       "id": "ca7f2118-27fb-4bf3-8c19-9330e37dc47b",
       "name": "Update row(s)",
       "alwaysOutputData": true
@@ -419,27 +266,16 @@
         "operation": "get",
         "tableId": "users",
         "filters": {
-          "conditions": [
-            {
-              "keyName": "phone",
-              "keyValue": "={{ $('Switch').item.json.sender_phone_number }}"
-            }
-          ]
+          "conditions": [{"keyName": "phone", "keyValue": "={{ $('Filtrar info').first().json.sender_phone_number }}"}]
         }
       },
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [
-        2080,
-        720
-      ],
+      "position": [2080, 720],
       "id": "092d00c1-b807-4f2e-b08f-7eb4d8ec73a3",
       "name": "Users",
       "credentials": {
-        "supabaseApi": {
-          "id": "uN3CKqDXL67SmcyV",
-          "name": "Supabase account"
-        }
+        "supabaseApi": {"id": "uN3CKqDXL67SmcyV", "name": "Supabase account"}
       }
     },
     {
@@ -451,17 +287,11 @@
       },
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [
-        1920,
-        720
-      ],
+      "position": [1920, 720],
       "id": "5db67769-7f9f-490c-91ce-27e971975897",
       "name": "Instruments",
       "credentials": {
-        "supabaseApi": {
-          "id": "uN3CKqDXL67SmcyV",
-          "name": "Supabase account"
-        }
+        "supabaseApi": {"id": "uN3CKqDXL67SmcyV", "name": "Supabase account"}
       }
     },
     {
@@ -473,17 +303,11 @@
       },
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [
-        1760,
-        720
-      ],
+      "position": [1760, 720],
       "id": "c0d34d1d-2155-44c9-83fc-e4eee8687591",
       "name": "Portfolio_Instruments",
       "credentials": {
-        "supabaseApi": {
-          "id": "uN3CKqDXL67SmcyV",
-          "name": "Supabase account"
-        }
+        "supabaseApi": {"id": "uN3CKqDXL67SmcyV", "name": "Supabase account"}
       }
     },
     {
@@ -495,17 +319,11 @@
       },
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [
-        1600,
-        720
-      ],
+      "position": [1600, 720],
       "id": "af7d9440-725d-4c68-a61b-0f5f7655b587",
       "name": "Portfolios",
       "credentials": {
-        "supabaseApi": {
-          "id": "uN3CKqDXL67SmcyV",
-          "name": "Supabase account"
-        }
+        "supabaseApi": {"id": "uN3CKqDXL67SmcyV", "name": "Supabase account"}
       }
     },
     {
@@ -517,31 +335,121 @@
       },
       "type": "n8n-nodes-base.supabaseTool",
       "typeVersion": 1,
-      "position": [
-        1392,
-        736
-      ],
+      "position": [1392, 736],
       "id": "1f0024be-e794-4194-b76e-667fcf22a1bd",
       "name": "Investor_Profiles",
       "credentials": {
-        "supabaseApi": {
-          "id": "uN3CKqDXL67SmcyV",
-          "name": "Supabase account"
-        }
+        "supabaseApi": {"id": "uN3CKqDXL67SmcyV", "name": "Supabase account"}
       }
     },
     {
       "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "CObpRHlL2FqjPayQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CObpRHlL2FqjPayQ",
+          "cachedResultName": "On Boarding"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone_number_id": "={{ $('Filtrar info').item.json.phone_number_id }}",
+            "sender_phone_number": "={{ $('Filtrar info').item.json.sender_phone_number }}",
+            "user_name": "={{ $('Filtrar info').item.json.user_name }}",
+            "message": "={{ $('Filtrar info').item.json.message }}",
+            "conversationStatus": "={{ $('Filtrar info').item.json.conversationStatus }}",
+            "context": "={{ $('Filtrar info').item.json.context }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {"id": "phone_number_id", "displayName": "phone_number_id", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "user_name", "displayName": "user_name", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "message", "displayName": "message", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "number", "removed": false},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
-      "position": [
-        1696,
-        -48
-      ],
+      "position": [1696, -48],
       "id": "80550b46-da04-45e6-88d6-d7ec11f8a933",
-      "name": "Execute Workflow"
+      "name": "Iniciar On Boarding"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "CObpRHlL2FqjPayQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CObpRHlL2FqjPayQ",
+          "cachedResultName": "On Boarding"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone_number_id": "={{ $json.phone_number_id }}",
+            "sender_phone_number": "={{ $json.sender_phone_number }}",
+            "user_name": "={{ $json.user_name }}",
+            "message": "={{ $json.message }}",
+            "conversationStatus": "={{ $json.conversationStatus }}",
+            "context": "={{ $json.context }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {"id": "phone_number_id", "displayName": "phone_number_id", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "user_name", "displayName": "user_name", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "message", "displayName": "message", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "number", "removed": false},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [1008, 480],
+      "id": "orq-exec-onboarding-progress",
+      "name": "Continuar On Boarding"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "bahDvRNCeUh226bt",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "phone_number_id": "={{ $('Filtrar info').first().json.phone_number_id }}",
+            "to": "={{ $('Filtrar info').first().json.sender_phone_number }}",
+            "text": "={{ $json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {"id": "phone_number_id", "displayName": "phone_number_id", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "to", "displayName": "to", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false},
+            {"id": "text", "displayName": "text", "required": false, "defaultMatch": false, "display": true, "canBeUsedToMatch": true, "type": "string", "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [1680, 528],
+      "id": "orq-call-send-message-agent",
+      "name": "Call 'Send Message'"
     }
   ],
   "pinData": {},
@@ -549,212 +457,72 @@
     "When Executed by Another Workflow": {
       "main": [
         [
-          {
-            "node": "Obtener Conversation Status",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Obtener Contexto de Conversacion",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
+          {"node": "Obtener Conversation Status", "type": "main", "index": 0},
+          {"node": "Obtener Contexto de Conversacion", "type": "main", "index": 0},
+          {"node": "Merge", "type": "main", "index": 0}
         ]
       ]
     },
     "Obtener Conversation Status": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
+      "main": [[{"node": "Merge", "type": "main", "index": 1}]]
     },
     "Merge": {
-      "main": [
-        [
-          {
-            "node": "Agregar Status de Conversacion",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Agregar Status de Conversacion", "type": "main", "index": 0}]]
     },
     "Obtener Contexto de Conversacion": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 2
-          }
-        ]
-      ]
+      "main": [[{"node": "Merge", "type": "main", "index": 2}]]
     },
     "Agregar Status de Conversacion": {
-      "main": [
-        [
-          {
-            "node": "Filtrar info",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Filtrar info", "type": "main", "index": 0}]]
     },
     "Filtrar info": {
-      "main": [
-        [
-          {
-            "node": "Switch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Switch", "type": "main", "index": 0}]]
     },
     "Switch": {
       "main": [
-        [
-          {
-            "node": "Obtener si el usuario esta registrado",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{"node": "Obtener si el usuario esta registrado", "type": "main", "index": 0}],
+        [{"node": "AI Agent", "type": "main", "index": 0}],
+        [{"node": "Continuar On Boarding", "type": "main", "index": 0}]
       ]
     },
     "Obtener si el usuario esta registrado": {
-      "main": [
-        [
-          {
-            "node": "Registrado?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "Registrado?", "type": "main", "index": 0}]]
     },
     "Registrado?": {
-      "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{"node": "If1", "type": "main", "index": 0}]]
     },
     "If1": {
       "main": [
         [
-          {
-            "node": "Update row(s)",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
+          {"node": "Update row(s)", "type": "main", "index": 0},
+          {"node": "AI Agent", "type": "main", "index": 0}
         ],
-        [
-          {
-            "node": "Execute Workflow",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{"node": "Iniciar On Boarding", "type": "main", "index": 0}]
       ]
     },
     "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_languageModel": [[{"node": "AI Agent", "type": "ai_languageModel", "index": 0}]]
     },
     "Update row(s)": {
-      "main": [
-        []
-      ]
+      "main": [[]]
     },
     "Users": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]
     },
     "Instruments": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]
     },
     "Portfolio_Instruments": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]
     },
     "Portfolios": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]
     },
     "Investor_Profiles": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
+      "ai_tool": [[{"node": "AI Agent", "type": "ai_tool", "index": 0}]]
+    },
+    "AI Agent": {
+      "main": [[{"node": "Call 'Send Message'", "type": "main", "index": 0}]]
     }
   },
   "active": true,
@@ -762,7 +530,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "df4fc3d6-136a-4e19-87e6-abb1825b507c",
+  "versionId": "df4fc3d6-136a-4e19-87e6-abb1825b507d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"

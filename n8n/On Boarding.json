@@ -2,25 +2,774 @@
   "name": "On Boarding",
   "nodes": [
     {
-      "parameters": {},
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {"name": "phone_number_id"},
+            {"name": "sender_phone_number"},
+            {"name": "user_name"},
+            {"name": "message"},
+            {"name": "conversationStatus"},
+            {"name": "context"}
+          ]
+        }
+      },
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
-      "position": [
-        -384,
-        -64
-      ],
-      "id": "76d60a06-ad1a-4ed0-b72a-1198886da24b",
+      "position": [0, 2800],
+      "id": "ob-001-start",
       "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-0", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 0, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "nuevo_usuario"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-2", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 2, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p1"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-3", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 3, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p2"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-4", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 4, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p3"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-5", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 5, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p4"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-6", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 6, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p5"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-7", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 7, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p6"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+                "conditions": [{"id": "case-8", "leftValue": "={{ $json.conversationStatus }}", "rightValue": 8, "operator": {"type": "number", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "respuesta_p7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [220, 2800],
+      "id": "ob-002-switch",
+      "name": "Switch"
+    },
+
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "q1-phone", "name": "phone_number_id", "value": "={{ $json.phone_number_id }}", "type": "string"},
+            {"id": "q1-sender", "name": "sender_phone_number", "value": "={{ $json.sender_phone_number }}", "type": "string"},
+            {"id": "q1-to", "name": "to", "value": "={{ $json.sender_phone_number }}", "type": "string"},
+            {"id": "q1-user", "name": "user_name", "value": "={{ $json.user_name }}", "type": "string"},
+            {"id": "q1-body", "name": "message_body", "value": "=¡Bienvenido/a a Riva, {{ $json.user_name }}! 👋\n\nSoy tu asistente financiera personal. Te haré 7 preguntas rápidas para conocer tu perfil inversor y poder ayudarte mejor.\n\n*Pregunta 1/7:* ¿Cómo definís tu conocimiento sobre las distintas alternativas de inversión en el Mercado de Capitales?", "type": "string"},
+            {"id": "q1-btn", "name": "button_text", "value": "Seleccioná", "type": "string"},
+            {"id": "q1-section", "name": "section_title", "value": "Nivel de conocimiento", "type": "string"},
+            {"id": "q1-rows", "name": "rows", "value": "=[{\"id\":\"con_1\",\"title\":\"1 - Nulo\",\"description\":\"No conozco ni realicé inversiones\"},{\"id\":\"con_2\",\"title\":\"2 - Poco\",\"description\":\"Solo utilizo servicios bancarios (ej. Plazo Fijo)\"},{\"id\":\"con_3\",\"title\":\"3 - Mínimo\",\"description\":\"No invertí fuera del banco, pero conozco opciones\"},{\"id\":\"con_4\",\"title\":\"4 - Intermedio\",\"description\":\"Realicé inversiones ocasionales y conozco los riesgos\"},{\"id\":\"con_5\",\"title\":\"5 - Experto\",\"description\":\"Mucho conocimiento y experiencia en inversiones\"}]", "type": "array"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 0],
+      "id": "ob-003-set-q1",
+      "name": "Set Q1"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, -150],
+      "id": "ob-004-send-q1",
+      "name": "Enviar P1"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"sender_phone_number": "={{ $json.sender_phone_number }}", "conversationStatus": 2},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 100],
+      "id": "ob-005-create-status",
+      "name": "Crear Status (2)"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"sender_phone_number": "={{ $json.sender_phone_number }}", "context": "{}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 350],
+      "id": "ob-006-create-context",
+      "name": "Crear Context"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p1 = data.message;\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    message_body: 'Pregunta 2/7: ¿Cuánta experiencia tenés invirtiendo?',\n    button_text: 'Seleccioná',\n    section_title: 'Experiencia inversora',\n    rows: [\n      {id:'exp_1',title:'1 - Ninguna',description:'Como mucho compré/vendí moneda extranjera en el banco'},\n      {id:'exp_2',title:'2 - Mínima',description:'Realicé depósitos en Plazo Fijo y/o compra/venta de divisas'},\n      {id:'exp_3',title:'3 - Intermedia',description:'Invertí en Fondos Comunes de Inversión'},\n      {id:'exp_4',title:'4 - Avanzada',description:'Realicé compra/venta de acciones y/o bonos'},\n      {id:'exp_5',title:'5 - Experto',description:'Invertí en derivados financieros'}\n    ],\n    newContext: JSON.stringify(context),\n    nextStatus: 3\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 800],
+      "id": "ob-007-code-step2",
+      "name": "Code Step 2"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 650],
+      "id": "ob-008-send-q2",
+      "name": "Enviar P2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": "={{ $json.nextStatus }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 900],
+      "id": "ob-009-upd-status-3",
+      "name": "Update Status (3)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"context": "={{ $json.newContext }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 1150],
+      "id": "ob-010-upd-ctx-2",
+      "name": "Update Context (P1)"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p2 = data.message;\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    message_body: 'Pregunta 3/7: ¿Qué porcentaje de tu ingreso podés ahorrar mensualmente?',\n    button_text: 'Seleccioná',\n    section_title: 'Capacidad de ahorro',\n    rows: [\n      {id:'aho_1',title:'1 - Hasta el 10%'},\n      {id:'aho_2',title:'2 - Hasta el 25%'},\n      {id:'aho_3',title:'3 - Hasta el 50%'},\n      {id:'aho_4',title:'4 - Hasta el 75%'}\n    ],\n    newContext: JSON.stringify(context),\n    nextStatus: 4\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 1600],
+      "id": "ob-011-code-step3",
+      "name": "Code Step 3"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 1450],
+      "id": "ob-012-send-q3",
+      "name": "Enviar P3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": "={{ $json.nextStatus }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 1700],
+      "id": "ob-013-upd-status-4",
+      "name": "Update Status (4)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"context": "={{ $json.newContext }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 1950],
+      "id": "ob-014-upd-ctx-3",
+      "name": "Update Context (P2)"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p3 = data.message;\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    message_body: 'Pregunta 4/7: ¿Qué porcentaje de tus ahorros invertirías?',\n    button_text: 'Seleccioná',\n    section_title: 'Porcentaje a invertir',\n    rows: [\n      {id:'inv_1',title:'1 - Hasta el 10%'},\n      {id:'inv_2',title:'2 - Hasta el 25%'},\n      {id:'inv_3',title:'3 - Hasta el 50%'},\n      {id:'inv_4',title:'4 - Hasta el 75%'}\n    ],\n    newContext: JSON.stringify(context),\n    nextStatus: 5\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 2400],
+      "id": "ob-015-code-step4",
+      "name": "Code Step 4"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 2250],
+      "id": "ob-016-send-q4",
+      "name": "Enviar P4"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": "={{ $json.nextStatus }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 2500],
+      "id": "ob-017-upd-status-5",
+      "name": "Update Status (5)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"context": "={{ $json.newContext }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 2750],
+      "id": "ob-018-upd-ctx-4",
+      "name": "Update Context (P3)"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p4 = data.message;\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    message_body: 'Pregunta 5/7: ¿Por cuánto tiempo estarías dispuesto a mantener una inversión?',\n    button_text: 'Seleccioná',\n    section_title: 'Horizonte temporal',\n    rows: [\n      {id:'hor_1',title:'1 - Menos de 1 año'},\n      {id:'hor_2',title:'2 - Entre 1 y 5 años'},\n      {id:'hor_3',title:'3 - Entre 5 y 10 años'},\n      {id:'hor_4',title:'4 - Más de 10 años'}\n    ],\n    newContext: JSON.stringify(context),\n    nextStatus: 6\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 3200],
+      "id": "ob-019-code-step5",
+      "name": "Code Step 5"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 3050],
+      "id": "ob-020-send-q5",
+      "name": "Enviar P5"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": "={{ $json.nextStatus }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 3300],
+      "id": "ob-021-upd-status-6",
+      "name": "Update Status (6)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"context": "={{ $json.newContext }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 3550],
+      "id": "ob-022-upd-ctx-5",
+      "name": "Update Context (P4)"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p5 = data.message;\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    message_body: 'Pregunta 6/7: ¿Qué buscás al invertir?',\n    button_text: 'Seleccioná',\n    section_title: 'Objetivo de inversión',\n    rows: [\n      {id:'obj_1',title:'1 - Mantener valor',description:'Mantener el valor de mis ahorros'},\n      {id:'obj_2',title:'2 - Ganarle inflación',description:'Superar la tasa de inflación'},\n      {id:'obj_3',title:'3 - Rendimiento moderado',description:'Entre inflación y hasta 5% más'},\n      {id:'obj_4',title:'4 - Máximo rendimiento',description:'Mayor a 5% sobre inflación, asumiendo más riesgo'}\n    ],\n    newContext: JSON.stringify(context),\n    nextStatus: 7\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 4000],
+      "id": "ob-023-code-step6",
+      "name": "Code Step 6"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 3850],
+      "id": "ob-024-send-q6",
+      "name": "Enviar P6"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": "={{ $json.nextStatus }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 4100],
+      "id": "ob-025-upd-status-7",
+      "name": "Update Status (7)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"context": "={{ $json.newContext }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 4350],
+      "id": "ob-026-upd-ctx-6",
+      "name": "Update Context (P5)"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p6 = data.message;\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    message_body: 'Pregunta 7/7: Si observás una baja importante en el valor de uno de tus activos ¿Qué proporción de tus inversiones mantendrías?',\n    button_text: 'Seleccioná',\n    section_title: 'Tolerancia al riesgo',\n    rows: [\n      {id:'rie_1',title:'1 - Vendo todo',description:'Me retiro inmediatamente'},\n      {id:'rie_2',title:'2 - Rescato parte',description:'El resto lo muevo a productos de menor riesgo'},\n      {id:'rie_3',title:'3 - Mantengo todo',description:'Mi estrategia no varía, asumo rentabilidades negativas'},\n      {id:'rie_4',title:'4 - Compro más',description:'Sumo capital para comprar el producto a la baja'}\n    ],\n    newContext: JSON.stringify(context),\n    nextStatus: 8\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 4800],
+      "id": "ob-027-code-step7",
+      "name": "Code Step 7"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "zTfq0kFz6JpqGqrr", "mode": "list", "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr", "cachedResultName": "Send List"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 4650],
+      "id": "ob-028-send-q7",
+      "name": "Enviar P7"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": "={{ $json.nextStatus }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 4900],
+      "id": "ob-029-upd-status-8",
+      "name": "Update Status (8)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "knEEHew7LNKoFxDU", "mode": "list", "cachedResultName": "conversationContext"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"context": "={{ $json.newContext }}"},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true},
+            {"id": "context", "displayName": "context", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 5150],
+      "id": "ob-030-upd-ctx-7",
+      "name": "Update Context (P6)"
+    },
+
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nlet context = {};\ntry { context = JSON.parse(data.context || '{}'); } catch(e) {}\ncontext.p7 = data.message;\n\nconst extractScore = (val) => {\n  if (!val) return 1;\n  const parts = val.split('_');\n  return parseInt(parts[parts.length - 1]) || 1;\n};\n\nconst scores = [\n  extractScore(context.p1),\n  extractScore(context.p2),\n  extractScore(context.p3),\n  extractScore(context.p4),\n  extractScore(context.p5),\n  extractScore(context.p6),\n  extractScore(context.p7)\n];\n\nconst avg = scores.reduce((a, b) => a + b, 0) / scores.length;\n\nlet profile;\nif (avg <= 1.8) profile = 'Conservador';\nelse if (avg <= 2.6) profile = 'Moderado';\nelse if (avg <= 3.4) profile = 'Crecimiento';\nelse profile = 'Agresivo';\n\nconst emoji = {Conservador:'🛡️', Moderado:'⚖️', Crecimiento:'📈', Agresivo:'🚀'}[profile];\nconst profileScore = Math.round(avg * 100) / 100;\n\nconst completionText = '¡Listo, ' + data.user_name + '! 🎉\\n\\nCompletaste tu perfil inversor.\\n\\nTu perfil es: *' + profile + '* ' + emoji + '\\n\\nYa podés consultarme sobre tu portafolio, inversiones y mucho más. ¡Estoy aquí para ayudarte! 💼';\n\nreturn [{\n  json: {\n    phone_number_id: data.phone_number_id,\n    sender_phone_number: data.sender_phone_number,\n    to: data.sender_phone_number,\n    user_name: data.user_name,\n    investor_profile: profile,\n    profile_score: profileScore,\n    newContext: JSON.stringify(context),\n    nextStatus: 1,\n    text: completionText\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 5800],
+      "id": "ob-031-code-finalize",
+      "name": "Code Finalize"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "users",
+        "dataToSend": "defineBelow",
+        "fieldsUi": {
+          "fieldValues": [
+            {"fieldId": "phone", "fieldValue": "={{ $json.sender_phone_number }}"},
+            {"fieldId": "name", "fieldValue": "={{ $json.user_name }}"},
+            {"fieldId": "investor_profile", "fieldValue": "={{ $json.investor_profile }}"},
+            {"fieldId": "profile_score", "fieldValue": "={{ $json.profile_score }}"}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [740, 5600],
+      "id": "ob-032-create-user",
+      "name": "Crear Usuario Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "uN3CKqDXL67SmcyV",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {"__rl": true, "value": "uQnexyfSUMjZCC80", "mode": "list", "cachedResultName": "conversationStatus"},
+        "matchType": "allConditions",
+        "filters": {"conditions": [{"keyName": "sender_phone_number", "keyValue": "={{ $json.sender_phone_number }}"}]},
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {"conversationStatus": 1},
+          "matchingColumns": [],
+          "schema": [
+            {"id": "sender_phone_number", "displayName": "sender_phone_number", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": true},
+            {"id": "conversationStatus", "displayName": "conversationStatus", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [740, 5850],
+      "id": "ob-033-upd-status-1",
+      "name": "Update Status (1)"
+    },
+    {
+      "parameters": {
+        "workflowId": {"__rl": true, "value": "bahDvRNCeUh226bt", "mode": "list", "cachedResultUrl": "/workflow/bahDvRNCeUh226bt", "cachedResultName": "Send Message"},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [740, 6100],
+      "id": "ob-034-send-completion",
+      "name": "Enviar Bienvenida Final"
     }
   ],
   "pinData": {},
-  "connections": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [[{"node": "Switch", "type": "main", "index": 0}]]
+    },
+    "Switch": {
+      "main": [
+        [{"node": "Set Q1", "type": "main", "index": 0}],
+        [{"node": "Code Step 2", "type": "main", "index": 0}],
+        [{"node": "Code Step 3", "type": "main", "index": 0}],
+        [{"node": "Code Step 4", "type": "main", "index": 0}],
+        [{"node": "Code Step 5", "type": "main", "index": 0}],
+        [{"node": "Code Step 6", "type": "main", "index": 0}],
+        [{"node": "Code Step 7", "type": "main", "index": 0}],
+        [{"node": "Code Finalize", "type": "main", "index": 0}]
+      ]
+    },
+    "Set Q1": {
+      "main": [[
+        {"node": "Enviar P1", "type": "main", "index": 0},
+        {"node": "Crear Status (2)", "type": "main", "index": 0},
+        {"node": "Crear Context", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Step 2": {
+      "main": [[
+        {"node": "Enviar P2", "type": "main", "index": 0},
+        {"node": "Update Status (3)", "type": "main", "index": 0},
+        {"node": "Update Context (P1)", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Step 3": {
+      "main": [[
+        {"node": "Enviar P3", "type": "main", "index": 0},
+        {"node": "Update Status (4)", "type": "main", "index": 0},
+        {"node": "Update Context (P2)", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Step 4": {
+      "main": [[
+        {"node": "Enviar P4", "type": "main", "index": 0},
+        {"node": "Update Status (5)", "type": "main", "index": 0},
+        {"node": "Update Context (P3)", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Step 5": {
+      "main": [[
+        {"node": "Enviar P5", "type": "main", "index": 0},
+        {"node": "Update Status (6)", "type": "main", "index": 0},
+        {"node": "Update Context (P4)", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Step 6": {
+      "main": [[
+        {"node": "Enviar P6", "type": "main", "index": 0},
+        {"node": "Update Status (7)", "type": "main", "index": 0},
+        {"node": "Update Context (P5)", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Step 7": {
+      "main": [[
+        {"node": "Enviar P7", "type": "main", "index": 0},
+        {"node": "Update Status (8)", "type": "main", "index": 0},
+        {"node": "Update Context (P6)", "type": "main", "index": 0}
+      ]]
+    },
+    "Code Finalize": {
+      "main": [[
+        {"node": "Crear Usuario Supabase", "type": "main", "index": 0},
+        {"node": "Update Status (1)", "type": "main", "index": 0},
+        {"node": "Enviar Bienvenida Final", "type": "main", "index": 0}
+      ]]
+    }
+  },
   "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "9570cc4f-7f17-4f1c-bbe3-ea0ee7deeda2",
+  "versionId": "9570cc4f-7f17-4f1c-bbe3-ea0ee7deeda3",
   "meta": {
     "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"
   },

@@ -53,6 +53,33 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v20.0/{{ $('Metadata').item.json.phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $('Metadata').item.json.sender_phone_number }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"body\": {\n      \"text\": \"Soy Riva, tu asistente virtual ¿En calidad de qué te estás comunicando? 👇\\n\\nSeleccioná MENÚ y elegí la opción que te represente\"\n    },\n    \"action\": {\n      \"button\": \"Menú\",\n      \"sections\": [\n        {\n          \"rows\": [\n            {\n              \"id\": \"asegurado\",\n              \"title\": \"Soy Asegurado/a\"\n            },\n            {\n              \"id\": \"cotizar\",\n              \"title\": \"Quiero contratar/cotizar\",\n              \"description\": \"Quiero contratar o cotizar un seguro\"\n            },\n            {\n              \"id\": \"no_asegurado\",\n              \"title\": \"No soy Asegurado/a\",\n              \"description\": \"Tuve un siniestro con un cliente de Rivadavia\"\n            },\n            {\n              \"id\": \"tallerista\",\n              \"title\": \"Soy tallerista\",\n              \"description\": \"Tallerista / Autopartista\"\n            },\n            {\n              \"id\": \"otro\",\n              \"title\": \"Otro\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1664,
+        -304
+      ],
+      "id": "0a8f2fce-c985-444d-a478-6f03665cc6ee",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "GHiZAwQJBNgR3yQe",
+          "name": "Permanent Token API"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
         "resource": "audio",
         "operation": "transcribe",
         "options": {}
@@ -148,6 +175,30 @@
               },
               "renameOutput": true,
               "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "leftValue": "={{ $json.message_type }}",
+                    "rightValue": "interactive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "interactive"
             }
           ]
         },
@@ -254,33 +305,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "=https://graph.facebook.com/v20.0/{{ $('Metadata').item.json.phone_number_id }}/messages",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "httpBearerAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $('Metadata').item.json.sender_phone_number }}\",\n  \"type\": \"interactive\",\n  \"interactive\": {\n    \"type\": \"list\",\n    \"body\": {\n      \"text\": \"Soy Riva, tu asistente virtual ¿En calidad de qué te estás comunicando? 👇\\n\\nSeleccioná MENÚ y elegí la opción que te represente\"\n    },\n    \"action\": {\n      \"button\": \"Menú\",\n      \"sections\": [\n        {\n          \"rows\": [\n            {\n              \"id\": \"asegurado\",\n              \"title\": \"Soy Asegurado/a\"\n            },\n            {\n              \"id\": \"cotizar\",\n              \"title\": \"Quiero contratar/cotizar\",\n              \"description\": \"Quiero contratar o cotizar un seguro\"\n            },\n            {\n              \"id\": \"no_asegurado\",\n              \"title\": \"No soy Asegurado/a\",\n              \"description\": \"Tuve un siniestro con un cliente de Rivadavia\"\n            },\n            {\n              \"id\": \"tallerista\",\n              \"title\": \"Soy tallerista\",\n              \"description\": \"Tallerista / Autopartista\"\n            },\n            {\n              \"id\": \"otro\",\n              \"title\": \"Otro\"\n            }\n          ]\n        }\n      ]\n    }\n  }\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        1664,
-        -304
-      ],
-      "id": "0a8f2fce-c985-444d-a478-6f03665cc6ee",
-      "name": "HTTP Request",
-      "credentials": {
-        "httpBearerAuth": {
-          "id": "GHiZAwQJBNgR3yQe",
-          "name": "Permanent Token API"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -298,7 +322,7 @@
             {
               "id": "a370dd2f-844e-489c-995c-83c7da1073ca",
               "name": "sender_phone_number",
-              "value": "={{ $json.contacts[0].wa_id }}",
+              "value": "={{ String($json.contacts[0].wa_id) }}",
               "type": "string"
             },
             {
@@ -399,6 +423,29 @@
       ],
       "id": "9d84d7ad-8f54-4b0c-869c-5b1c450579ed",
       "name": "Call 'Orquestador'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "interactive-reply-field",
+              "name": "message",
+              "value": "={{ $('WhatsApp Trigger').item.json.messages[0].interactive.list_reply.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        192
+      ],
+      "id": "b1c2d3e4-f5a6-7890-bcde-fa1234567890",
+      "name": "Edit Fields Interactive"
     }
   ],
   "pinData": {
@@ -476,6 +523,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Edit Fields Interactive",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -523,6 +577,17 @@
         ]
       ]
     },
+    "Edit Fields Interactive": {
+      "main": [
+        [
+          {
+            "node": "Call 'Orquestador'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Metadata": {
       "main": [
         [
@@ -540,7 +605,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "6bd135e5-7b40-438d-b512-18d70fcc7e30",
+  "versionId": "6bd135e5-7b40-438d-b512-18d70fcc7e31",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"
