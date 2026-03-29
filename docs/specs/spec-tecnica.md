@@ -1,19 +1,17 @@
 # Especificacion Tecnica
 **Proyecto:** HackITBA 2026
-**Version:** 0.3 (pivot a WhatsApp + N8N)
+**Version:** 0.4
 **Ultima actualizacion:** 2026-03-28
 
 ---
 
 ## 1. Objetivo
 
-Este documento describe la arquitectura, componentes, decisiones tecnicas y alcance de implementacion del MVP. El sistema pivoto de una web app interactiva a un chatbot conversacional en WhatsApp orquestado por N8N, con una web app de solo lectura como superficie complementaria.
+Este documento describe la arquitectura, componentes, decisiones tecnicas y alcance de implementacion del MVP. El sistema combina un chatbot conversacional en WhatsApp (orquestado por N8N) con un dashboard web interactivo (Next.js), ambos respaldados por una base de datos en Supabase.
 
 ---
 
 ## 2. Arquitectura general
-
-El sistema tiene tres componentes principales que se comunican entre si:
 
 ```mermaid
 flowchart TD
@@ -22,7 +20,9 @@ flowchart TD
     N8N -->|respuesta| WA
     API --> DB[(Supabase\nPostgreSQL)]
     API --> LLM[OpenAI API\nGPT-4o]
-    WEB[Dashboard Web\nNext.js App Router] --> API
+    API --> DINARI[Dinari Enterprise API\nSandbox]
+    WEB[Dashboard Web\nNext.js App Router] --> DB
+    WEB --> DINARI
     N8N_SCHED[N8N\nScheduled Flows] --> API
     N8N_SCHED -->|mensajes proactivos| WA
 ```
@@ -34,18 +34,20 @@ flowchart TD
 | WhatsApp Business API | Meta (oficial) | Canal de mensajeria entrante y saliente |
 | N8N (chat workflow) | N8N Cloud o self-hosted | Recibe mensajes, ejecuta AI Agent, envia respuestas |
 | N8N (scheduled flows) | N8N Cloud o self-hosted | Flows proactivos: revision semanal, recordatorios |
-| Next.js API Routes | Next.js (App Router) | Backend REST: logica de negocio, calculo de scores, acceso a DB |
-| Dashboard web | Next.js (App Router) | Frontend de solo lectura: portfolios, metricas, composicion |
+| Next.js API Routes | Next.js 16 (App Router) | Backend REST: logica de negocio, calculo de scores, acceso a DB |
+| Dashboard web | Next.js 16 (App Router) | Frontend interactivo: login, dashboard, editor de cartera, config de debito |
 | Supabase | PostgreSQL gestionado | Base de datos persistente |
 | OpenAI GPT-4o | OpenAI API | LLM para el AI Agent y generacion de insights |
+| Dinari Enterprise API | Sandbox | Datos de stocks del mercado americano (metadata, logos, simbolos) |
 
 ### Principios de diseno
 
 - N8N es el orquestador conversacional. No contiene logica de negocio: delega todo a la API de Next.js via tool calls.
-- La API de Next.js es stateless y RESTful. Es la unica capa que toca la base de datos.
-- El dashboard web consume la misma API. No tiene logica propia.
-- Sin autenticacion en MVP: el usuario se identifica por su numero de telefono de WhatsApp.
-- Las llamadas a OpenAI se hacen exclusivamente desde el servidor (Next.js API Routes), nunca desde N8N directamente para la logica de negocio.
+- La API de Next.js es stateless y RESTful. Es la unica capa que toca la base de datos (salvo el dashboard que lee directamente via Server Components).
+- El dashboard web usa Server Components para leer datos directamente de Supabase (seguridad: service_role key nunca llega al browser).
+- Autenticacion del dashboard: login mock con email/password plain text y cookie `user_id` HttpOnly.
+- Autenticacion de la API interna: header `x-api-key` para endpoints llamados desde N8N.
+- Endpoints del dashboard (save, bank, debit) se autentican via la cookie de sesion.
 
 ---
 
@@ -53,53 +55,30 @@ flowchart TD
 
 ### Trigger
 
-Webhook POST configurado como endpoint receptor del WhatsApp Business API. Cada mensaje entrante dispara el workflow.
-
-### Estructura del workflow
-
-```mermaid
-flowchart TD
-    TRIGGER([Webhook POST\nWhatsApp Business API]) --> EXTRACT[Extrae número de teléfono\ny texto del mensaje]
-    EXTRACT --> LOAD[Carga historial de conversación\ndesde Supabase]
-    LOAD --> AGENT[AI Agent Node\nLangChain / GPT-4o]
-    AGENT -->|tool call| TOOLS[(HTTP Tools\nNext.js API)]
-    TOOLS -->|response| AGENT
-    AGENT --> RESPONSE[Respuesta generada\ntexto + botones opcionales]
-    RESPONSE --> SEND[Envía respuesta\nvía WhatsApp Business API]
-    SEND --> SAVE[Guarda historial\nactualizado en Supabase]
-```
+Webhook POST configurado como endpoint receptor del WhatsApp Business API.
 
 ### Tools del AI Agent
 
-Cada tool es una llamada HTTP a la API de Next.js. El agente decide cuándo llamar a cada una.
+Cada tool es una llamada HTTP a la API de Next.js con header `x-api-key`.
 
 | Tool | Metodo | Endpoint | Descripcion |
 |------|--------|----------|-------------|
-| `get_investor_profile` | GET | `/api/profile?phone={phone}` | Lee el perfil del usuario por numero de telefono |
-| `save_investor_profile` | POST | `/api/profile` | Guarda o actualiza el perfil extraido del onboarding |
-| `get_portfolio` | GET | `/api/portfolio?phone={phone}` | Trae el portfolio activo del usuario |
+| `get_investor_profile` | GET | `/api/profile?phone={phone}` | Lee el perfil del usuario |
+| `save_investor_profile` | POST | `/api/profile` | Guarda o actualiza el perfil |
+| `get_portfolio` | GET | `/api/portfolio?phone={phone}` | Trae el portfolio activo |
 | `suggest_portfolio` | POST | `/api/portfolio/suggested` | Genera cartera sugerida segun perfil |
 | `save_portfolio` | POST | `/api/portfolio` | Guarda cambios a la cartera |
-| `calculate_fit_score` | POST | `/api/portfolio/fit-score` | Calcula el score para una composicion dada |
+| `calculate_fit_score` | POST | `/api/portfolio/fit-score` | Calcula el score para una composicion |
 | `get_portfolio_insights` | POST | `/api/portfolio/insights` | Genera insights del Portfolio Doctor |
 | `simulate_whatif` | POST | `/api/portfolio/simulate` | Simula un escenario what-if |
-| `mock_transfer` | POST | `/api/transfer/mock` | Simula la ejecucion de un aporte automatico y actualiza `next_contribution_date` segun la frecuencia configurada |
-| `get_market_data` | GET | `/api/market-data` | Lee instrumentos disponibles y datos historicos |
-
-### System prompt del AI Agent
-
-El system prompt define:
-- Personalidad: cercana, directa, sin jerga financiera tecnica.
-- Restricciones regulatorias: no dar consejos de compra/venta, incluir disclaimer.
-- Instruccion de usar botones y listas de WhatsApp Business para opciones (formato especifico segun API de Meta).
-- Instruccion de preguntar de a una cosa a la vez durante el onboarding.
-- Instruccion de llamar a `save_investor_profile` cuando tenga suficiente informacion del perfil.
+| `mock_transfer` | POST | `/api/transfer/mock` | Simula aporte automatico |
+| `get_market_data` | GET | `/api/market-data` | Instrumentos + datos de Dinari |
 
 ### Memoria de conversacion
 
-- El historial se guarda en la tabla `conversation_history` de Supabase, indexado por numero de telefono.
-- El AI Agent carga los ultimos N mensajes al inicio de cada interaccion y los guarda al terminar.
-- Ventana de contexto: configurable, sugerido 20 mensajes para el MVP.
+- El historial se guarda en la tabla `conversation_history` de Supabase.
+- El AI Agent carga los ultimos N mensajes al inicio de cada interaccion.
+- Ventana de contexto: configurable, sugerido 20 mensajes.
 
 ---
 
@@ -107,33 +86,11 @@ El system prompt define:
 
 ### Flow 1: Revision semanal de cartera
 
-```mermaid
-flowchart TD
-    T([Schedule Trigger\nLunes 9am]) --> GET[GET /api/portfolios/all-active]
-    GET --> LOOP[Loop por cada usuario\ncon portfolio activo]
-    LOOP --> SCORE[POST /api/portfolio/fit-score]
-    SCORE --> CHECK{Score menor a 50\no bajó más de 10 pts?}
-    CHECK -->|No| SKIP[No action\nno se molesta al usuario]
-    CHECK -->|Sí| INSIGHT[POST /api/portfolio/insights]
-    INSIGHT --> SEND[Envía mensaje proactivo\nvía WhatsApp Business API]
-    SKIP --> NEXT[Siguiente usuario]
-    SEND --> NEXT
-```
+Trigger: Lunes 9am. Obtiene todos los portfolios activos (`GET /api/portfolios/all-active`), calcula fit score, y si detecta desalineacion envia mensaje proactivo via WhatsApp.
 
 ### Flow 2: Recordatorio de aporte
 
-```mermaid
-flowchart TD
-    T([Schedule Trigger\nDiario]) --> GET[GET /api/contributions/due-today]
-    GET --> CHECK{¿Hay aportes\nprogramados hoy?}
-    CHECK -->|No| END([Fin])
-    CHECK -->|Sí| LOOP[Loop por cada aporte]
-    LOOP --> MOCK[POST /api/transfer/mock]
-    MOCK --> UPDATE[Actualiza next_contribution_date]
-    UPDATE --> NOTIFY[Envía notificación\nvía WhatsApp Business API]
-    NOTIFY --> NEXT[Siguiente aporte]
-    NEXT --> END
-```
+Trigger: Diario. Obtiene aportes que vencen hoy (`GET /api/contributions/due-today`), simula ejecucion (`POST /api/transfer/mock`), actualiza `next_contribution_date` y notifica al usuario.
 
 ---
 
@@ -141,77 +98,131 @@ flowchart TD
 
 ### Stack
 
-- Framework: **Next.js** (App Router) con TypeScript.
+- Framework: **Next.js 16** (App Router) con TypeScript.
 - Base de datos: **Supabase** via `@supabase/supabase-js` con `service_role` key (server-side only).
-- LLM: OpenAI GPT-4o via `openai` SDK.
+- LLM: OpenAI GPT-4o via `openai` SDK (opcional).
+- Stocks: **Dinari Enterprise API** (sandbox).
+- Validacion: **Zod** para request bodies en endpoints internos.
 - Deploy: **Vercel**.
 
-### Endpoints
+### Endpoints internos (protegidos con `x-api-key`)
 
 ```
 # Perfil del inversor
-GET    /api/profile?phone={phone}        # Leer perfil por numero de telefono
-POST   /api/profile                      # Crear o actualizar perfil
+GET    /api/profile?phone={phone}
+POST   /api/profile
 
 # Portfolio
-GET    /api/portfolio?phone={phone}      # Traer portfolio activo del usuario
-POST   /api/portfolio/suggested          # Generar cartera sugerida segun perfil
-POST   /api/portfolio                    # Guardar cartera personalizada
-POST   /api/portfolio/fit-score          # Calcular score para una composicion
-POST   /api/portfolio/insights           # Generar insights del Portfolio Doctor
-POST   /api/portfolio/simulate           # Simular escenario what-if
+GET    /api/portfolio?phone={phone}
+POST   /api/portfolio/suggested
+POST   /api/portfolio
+POST   /api/portfolio/fit-score
+POST   /api/portfolio/insights
+POST   /api/portfolio/simulate
 
 # Datos internos (para flows proactivos)
-GET    /api/portfolios/all-active        # Todos los portfolios activos (uso interno N8N)
-GET    /api/contributions/due-today      # Aportes que vencen hoy
+GET    /api/portfolios/all-active
+GET    /api/contributions/due-today
 
 # Mercado
-GET    /api/market-data                  # Instrumentos y datos historicos
+GET    /api/market-data
 
 # Transfers mockeados
-POST   /api/transfer/mock                # Simula ejecucion de aporte
+POST   /api/transfer/mock
 ```
 
-### Autenticacion de la API
+### Endpoints del dashboard (protegidos con cookie de sesion)
 
-En MVP: los endpoints de uso interno (llamados desde N8N) se protegen con un API key estatico enviado como header `x-api-key`. No hay auth de usuario.
+```
+# Autenticacion
+POST   /api/auth/login
+POST   /api/auth/logout
+GET    /api/auth/me
+
+# Guardar cartera desde el editor
+POST   /api/portfolio/save-from-dashboard
+
+# Banco y debito
+POST   /api/bank/connect
+POST   /api/debit/setup
+```
 
 ---
 
 ## 6. Next.js: Dashboard Web
 
-### Rol
+### Paginas
 
-Superficie de solo lectura. El usuario puede abrir el dashboard para ver su portfolio de forma visual. No hay onboarding, no hay edicion, no hay acciones.
+| Ruta | Tipo | Descripcion |
+|------|------|-------------|
+| `/login` | Client Component | Formulario email/password. Redirige a `/` on success. |
+| `/` | Server Component | Dashboard principal. Redirige a `/login` si no hay sesion. |
+| `/portfolio/edit` | Server + Client Component | Editor de cartera con Dinari stocks. |
+| `/debit/setup` | Server + Client Component | Seleccion de banco + config de debito automatico. |
 
-### Modulos
+### Componentes del dashboard
 
-| Modulo | Descripcion |
-|--------|-------------|
-| `PortfolioView` | Composicion actual de la cartera en graficos (torta / barras). |
-| `FitScoreDisplay` | Score actual con etiqueta y descripcion. |
-| `HistoricalReturns` | Rentabilidad a 1 mes, 3 meses, 1 año. |
-| `InsightsPanel` | Ultimos insights del Portfolio Doctor. |
-| `ContributionHistory` | Historial de aportes automaticos (mockeados). |
+| Componente | Archivo | Descripcion |
+|------------|---------|-------------|
+| `DashboardContent` | `components/dashboard/DashboardContent.tsx` | Container principal. Warning banner, header, layout. |
+| `HistoricalReturns` | `components/dashboard/HistoricalReturns.tsx` | Cards de retornos 1m/3m/1y. |
+| `CompositionChart` | `components/portfolio/CompositionChart.tsx` | Pie chart con Recharts. Paleta de 20 colores unicos. |
+| `FitScoreWidget` | `components/portfolio/FitScoreWidget.tsx` | SVG ring + breakdown bars. |
+| `InsightsPanel` | `components/dashboard/InsightsPanel.tsx` | Insights del Portfolio Doctor. |
+| `ContributionHistory` | `components/dashboard/ContributionHistory.tsx` | Tabla de aportes + proximo aporte. |
+| `PortfolioEditor` | `components/portfolio/PortfolioEditor.tsx` | Editor con allocations, chart live, fit score, Dinari tab. |
+| `DebitSetupForm` | `components/debit/DebitSetupForm.tsx` | 2-step: banco selection grid + debit config. |
 
-### Acceso
+### Estilos
 
-En MVP: el usuario accede al dashboard con un usuario hardcodeado (sin login real). La app carga directamente el portfolio del usuario mock sin pantalla de autenticacion.
-
-En produccion: el usuario se loguea con Google u otro proveedor OAuth. Al registrarse vincula su cuenta con su numero de WhatsApp. El dashboard muestra los datos del usuario autenticado. Esta capa de auth queda fuera del scope del hackathon.
-
-### Stack
-
-- Framework: **Next.js** (App Router) con TypeScript.
-- Estilos: Tailwind CSS.
-- Graficos: Recharts o similar.
-- Deploy: **Vercel** (mismo proyecto que la API).
+- Tailwind CSS.
+- Tema claro (fondo blanco `#ffffff`, cards `bg-white`, bordes `border-gray-200`).
+- Contraste WCAG AA: textos principales `text-gray-900`, secundarios `text-gray-500`.
 
 ---
 
-## 7. Motor de Portfolio Fit Score
+## 7. Integracion con Dinari Enterprise API
 
-Sin cambios respecto a la version anterior. Se calcula en el servidor (Next.js API) a partir de las siguientes dimensiones:
+### Configuracion
+
+- Base URL: `https://api-enterprise.sandbox.dinari.com/api/v2`
+- Autenticacion: headers `X-API-Key-Id` + `X-API-Secret-Key`.
+- Credenciales en variables de entorno: `DINARI_API_KEY_ID`, `DINARI_API_SECRET_KEY`.
+
+### Uso
+
+- El endpoint `GET /api/market-data` enriquece los instrumentos locales con datos de Dinari.
+- La pagina `/portfolio/edit` carga stocks de Dinari via `getStocks()` y los muestra en el tab "Stocks".
+- Al guardar una cartera con stocks de Dinari, el endpoint `save-from-dashboard` hace upsert en la tabla `instruments` usando el `ticker` como clave, con:
+  - `category`: `renta_variable`
+  - `risk_level`: `high`
+  - `return_1m/3m/1y`: valores mockeados (2.0, 6.0, 25.0)
+  - `volatility`: 15.0
+
+### Interface `DinariStock`
+
+```typescript
+interface DinariStock {
+  id: string;
+  name: string;
+  symbol: string;
+  is_fractionable: boolean;
+  is_tradable: boolean;
+  tokens: string[];
+  composite_figi: string | null;
+  cusip: string | null;
+  cik: string | null;
+  display_name: string | null;
+  description: string | null;
+  logo_url: string | null;
+}
+```
+
+---
+
+## 8. Motor de Portfolio Fit Score
+
+Se calcula en el servidor (Next.js API) y en el cliente (editor, via import directo) a partir de cinco dimensiones:
 
 | Dimension | Descripcion | Peso |
 |-----------|-------------|------|
@@ -221,99 +232,42 @@ Sin cambios respecto a la version anterior. Se calcula en el servidor (Next.js A
 | Consistencia historica | Volatilidad y rendimiento historico de los activos incluidos. | 15% |
 | Coherencia temporal | Si el perfil de riesgo es apropiado para el horizonte declarado. | 10% |
 
-| Rango | Etiqueta |
-|-------|----------|
-| 85-100 | Muy alineado |
-| 65-84 | Alineado |
-| 45-64 | Moderadamente fuera de perfil |
-| 0-44 | Fuera de perfil |
+Para el calculo client-side en el editor, se usa `registerInstruments()` para registrar instrumentos de Supabase y Dinari en el runtime del modulo `market-data`, permitiendo que `getInstrumentById()` los resuelva.
 
 ---
 
-## 8. Integracion con AI (OpenAI)
+## 9. Base de datos (Supabase)
 
-### Donde vive
+### Migraciones
 
-- El AI Agent corre en N8N (nodo nativo de LangChain en N8N).
-- Las llamadas a OpenAI para insights del Portfolio Doctor y simulaciones what-if se hacen desde **Next.js API Routes** (los endpoints `/api/portfolio/insights` y `/api/portfolio/simulate`).
-- N8N nunca llama a OpenAI directamente para logica de negocio: delega a los endpoints de Next.js.
+| Archivo | Contenido |
+|---------|-----------|
+| `001_initial_schema.sql` | 7 tablas, 11 enums, indices, FKs |
+| `002_mock_auth.sql` | Agrega `email` y `password` a `users` |
+| `003_connected_bank.sql` | Agrega `connected_bank` a `users` |
 
-### Prompt design para insights y simulaciones
-
-Los prompts incluyen siempre:
-- Perfil del usuario (objetivo, horizonte, tolerancia al riesgo, experiencia).
-- Composicion actual de la cartera en porcentajes.
-- Datos de rentabilidad y volatilidad historica de cada instrumento.
-- Portfolio Fit Score calculado.
-- Instruccion de responder en lenguaje simple, sin jerga tecnica.
-- Disclaimer obligatorio al final de cada respuesta.
-
-### Flujo de una llamada con tool call
-
-```mermaid
-sequenceDiagram
-    participant WA as WhatsApp API
-    participant N8N as N8N AI Agent
-    participant OAI as OpenAI GPT-4o
-    participant API as Next.js API
-    participant DB as Supabase
-
-    WA->>N8N: mensaje entrante
-    N8N->>DB: carga historial (últimos 20 msgs)
-    DB-->>N8N: historial
-    N8N->>OAI: system prompt + historial + tools disponibles
-    OAI-->>N8N: tool_call: get_portfolio_insights
-    N8N->>API: POST /api/portfolio/insights
-    API->>DB: lee portfolio + instruments
-    DB-->>API: datos del portfolio
-    API->>OAI: prompt con perfil + composición + fit score
-    OAI-->>API: insights en lenguaje simple
-    API-->>N8N: insights generados
-    N8N->>OAI: continúa razonamiento con resultado del tool
-    OAI-->>N8N: respuesta final para el usuario
-    N8N->>WA: envía respuesta (texto + botones)
-    N8N->>DB: guarda historial actualizado
-```
-
-### Restricciones
-
-- La AI no da consejos de compra/venta de activos especificos.
-- La AI no simula retornos futuros como garantia.
-- Toda respuesta incluye: "Esta informacion es orientativa y no constituye asesoramiento financiero regulado."
-
----
-
-## 9. Datos financieros
-
-Sin cambios respecto a la version anterior. Instrumentos y datos historicos almacenados como seed data en Supabase. No hay dependencia de APIs externas en tiempo real para el MVP.
-
----
-
-## 10. Base de datos (Supabase)
-
-### Tablas nuevas respecto a version anterior
+### Tablas
 
 #### `users`
-Reemplaza el concepto de usuario hardcodeado. Los usuarios se identifican por numero de telefono.
 
 | Campo | Tipo | Notas |
 |-------|------|-------|
 | `id` | uuid | PK |
-| `phone` | text | UNIQUE. Numero de telefono de WhatsApp (formato E.164) |
+| `phone` | text | UNIQUE. Formato E.164 |
+| `email` | text | UNIQUE. Para login web |
+| `password` | text | Plain text (MVP only) |
+| `connected_bank` | text | ID del banco conectado |
 | `created_at` | timestamptz | |
 
 #### `conversation_history`
-Historial de mensajes de cada usuario. Usado por el AI Agent en N8N para cargar contexto.
 
 | Campo | Tipo | Notas |
 |-------|------|-------|
 | `id` | uuid | PK |
 | `user_id` | uuid | FK a `users.id` |
 | `role` | enum | `user`, `assistant` |
-| `content` | text | Contenido del mensaje |
+| `content` | text | |
 | `created_at` | timestamptz | |
-
-### Tablas sin cambios estructurales
 
 #### `investor_profiles`
 
@@ -334,7 +288,7 @@ Historial de mensajes de cada usuario. Usado por el AI Agent en N8N para cargar 
 |-------|------|-------|
 | `id` | uuid | PK |
 | `name` | text | |
-| `ticker` | text | nullable |
+| `ticker` | text | nullable. Usado para match con Dinari stocks |
 | `category` | enum | `renta_fija`, `renta_variable`, `dolar`, `mixto`, `commodities` |
 | `risk_level` | enum | `low`, `medium`, `high` |
 | `return_1m` | numeric | |
@@ -353,11 +307,11 @@ Historial de mensajes de cada usuario. Usado por el AI Agent en N8N para cargar 
 | `name` | text | |
 | `fit_score` | numeric | 0-100 |
 | `status` | enum | `draft`, `active`, `archived` |
-| `is_suggested` | boolean | `true` si fue generado por el sistema |
-| `contribution_amount` | numeric | Monto o porcentaje del aporte periodico |
+| `is_suggested` | boolean | |
+| `contribution_amount` | numeric | Monto del aporte periodico |
 | `contribution_type` | enum | `percentage`, `fixed` |
 | `contribution_frequency` | enum | `weekly`, `biweekly`, `monthly` |
-| `next_contribution_date` | date | Proxima fecha de aporte programado |
+| `next_contribution_date` | date | |
 | `created_at` | timestamptz | |
 | `updated_at` | timestamptz | |
 
@@ -367,20 +321,27 @@ Historial de mensajes de cada usuario. Usado por el AI Agent en N8N para cargar 
 |-------|------|-------|
 | `portfolio_id` | uuid | FK a `portfolios.id` |
 | `instrument_id` | uuid | FK a `instruments.id` |
-| `percentage` | numeric | 0-100, suma por portfolio debe ser 100 |
+| `percentage` | numeric | 0-100, suma por portfolio = 100 |
 
 PK compuesta: `(portfolio_id, instrument_id)`.
 
 #### `contribution_history`
-Historial de aportes (mockeados) ejecutados.
 
 | Campo | Tipo | Notas |
 |-------|------|-------|
 | `id` | uuid | PK |
 | `portfolio_id` | uuid | FK a `portfolios.id` |
-| `amount` | numeric | Monto del aporte |
-| `executed_at` | timestamptz | Fecha de ejecucion simulada |
+| `amount` | numeric | |
+| `executed_at` | timestamptz | |
 | `status` | enum | `simulated`, `pending` |
+
+### Seed data
+
+- 8 instrumentos argentinos (money market, bonos, dolar MEP, ONs, FCI mixto, acciones, CEDEARs, commodities).
+- 1 usuario demo: `demo@hackitba.com` / `demo123`, phone `+5491100000000`.
+- 1 perfil de inversor: basico, growth, 1-3 años, moderado.
+- 1 portfolio activo: "Cartera Moderada", fit score 78, con 5 instrumentos.
+- 3 aportes historicos simulados de $50.000.
 
 ### Diagrama de relaciones
 
@@ -389,6 +350,9 @@ erDiagram
     users {
         uuid id PK
         text phone
+        text email
+        text password
+        text connected_bank
         timestamptz created_at
     }
     conversation_history {
@@ -458,72 +422,41 @@ erDiagram
 
 ---
 
-## 11. Infraestructura y deployment
+## 10. Infraestructura y deployment
 
 | Capa | Plataforma |
 |------|-----------|
-| Dashboard web + API Routes | **Vercel** (deploy automatico desde `main`) |
-| Base de datos | **Supabase** |
+| Dashboard web + API Routes | **Vercel** (`hackitba-2026.vercel.app`) |
+| Base de datos | **Supabase** (proyecto `wcvxtszryuvxfvrpiqrm`) |
 | Orquestacion conversacional | **N8N** (Cloud o self-hosted) |
 | WhatsApp | **WhatsApp Business API** (Meta) |
-| LLM | **OpenAI GPT-4o** |
-| Variables de entorno | `.env.local` en desarrollo + secrets en Vercel y N8N |
+| LLM | **OpenAI GPT-4o** (opcional) |
+| Stocks | **Dinari Enterprise API** (sandbox) |
 
-```mermaid
-flowchart TD
-    subgraph META["Meta Cloud"]
-        WA[WhatsApp Business API]
-    end
-
-    subgraph N8N_ENV["N8N Cloud / Self-hosted"]
-        CHAT_WF[AI Agent Workflow\nflujo conversacional]
-        SCHED_WF[Scheduled Flows\nrevisión semanal + aportes]
-    end
-
-    subgraph VERCEL["Vercel"]
-        NEXTJS[Next.js\nApp Router + API Routes\nDashboard Web]
-    end
-
-    subgraph SUPABASE["Supabase"]
-        POSTGRES[(PostgreSQL\nusers · portfolios\nconversation_history · ...)]
-    end
-
-    subgraph OPENAI["OpenAI"]
-        GPT[GPT-4o]
-    end
-
-    WA -->|webhook POST| CHAT_WF
-    CHAT_WF -->|respuesta| WA
-    SCHED_WF -->|mensajes proactivos| WA
-    CHAT_WF -->|HTTP + x-api-key| NEXTJS
-    SCHED_WF -->|HTTP + x-api-key| NEXTJS
-    NEXTJS -->|supabase-js service_role| POSTGRES
-    NEXTJS -->|openai SDK| GPT
-    BROWSER([Browser\nUsuario]) -->|HTTPS| NEXTJS
-```
-
-### Variables de entorno (Next.js / Vercel)
+### Variables de entorno (Vercel)
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
-INTERNAL_API_KEY=              # API key para autenticar llamadas desde N8N
+NEXT_PUBLIC_SUPABASE_URL=         # URL del proyecto Supabase
+SUPABASE_SERVICE_ROLE_KEY=        # Service role key (server-side only)
+INTERNAL_API_KEY=                 # API key para endpoints internos (N8N)
+DINARI_API_KEY_ID=                # Dinari API Key ID
+DINARI_API_SECRET_KEY=            # Dinari API Secret Key
+OPENAI_API_KEY=                   # OpenAI (opcional, para insights con AI)
 ```
 
 ### Variables de entorno (N8N)
 
 ```
-WHATSAPP_ACCESS_TOKEN=         # Token de WhatsApp Business API
-WHATSAPP_PHONE_NUMBER_ID=      # ID del numero de WhatsApp Business
-NEXT_API_BASE_URL=             # URL base de la API de Next.js (ej: https://proyecto.vercel.app)
-NEXT_INTERNAL_API_KEY=         # API key para autenticar en los endpoints internos
-OPENAI_API_KEY=                # Para el AI Agent node en N8N
+WHATSAPP_ACCESS_TOKEN=            # Token de WhatsApp Business API
+WHATSAPP_PHONE_NUMBER_ID=        # ID del numero de WhatsApp Business
+NEXT_API_BASE_URL=               # URL base (ej: https://hackitba-2026.vercel.app)
+NEXT_INTERNAL_API_KEY=           # Mismo valor que INTERNAL_API_KEY en Vercel
+OPENAI_API_KEY=                  # Para el AI Agent node en N8N
 ```
 
 ---
 
-## 12. Gestion de ramas
+## 11. Gestion de ramas
 
 El proyecto sigue Gitflow. Ver `.cursor/rules/gitflow.mdc` para el flujo completo.
 
@@ -533,33 +466,24 @@ El proyecto sigue Gitflow. Ver `.cursor/rules/gitflow.mdc` para el flujo complet
 | `develop` | Integracion continua |
 | `feature/*` | Features en desarrollo paralelo |
 
+Repositorio: `github.com/merianro/hackitba-2026`
+
 ---
 
-## 13. Decisiones tecnicas tomadas
+## 12. Decisiones tecnicas tomadas
 
 | Decision | Razon |
 |----------|-------|
-| Dashboard sin auth en MVP | Elimina complejidad de sesion y OAuth para el hackathon. En produccion se vincula cuenta Google con numero de WhatsApp. |
-| WhatsApp como canal principal | Elimina friccion de adoption. Todo el mundo tiene WhatsApp. No hay app que instalar. |
-| N8N como orquestador con AI Agent | Permite flujo conversacional libre sin codigo de estado manual. El AI Agent decide que tools usar. |
-| Next.js como API backend (no N8N como backend) | La logica de negocio vive en codigo versionado y testeable. N8N solo orquesta y delega. |
-| Identificacion por numero de telefono | Reemplaza el user_id hardcodeado. Natural en el contexto de WhatsApp. |
-| Historial de conversacion en Supabase | Permite memoria persistente entre sesiones sin depender del estado de N8N. |
-| Dashboard web de solo lectura | Reduce scope drasticamente. La interaccion ocurre en WhatsApp; la web es solo visualizacion. |
-| API key estatico para endpoints internos | Autenticacion minima suficiente para el MVP sin complejidad de auth real. |
-| Calls a OpenAI desde Next.js (no desde N8N) | Logica de prompts versionada en codigo. N8N usa el AI Agent para la conversacion; Next.js para los calculos. |
+| Login mock (email/password plain text, cookie session) | Suficiente para demo. Elimina complejidad de OAuth/JWT para el hackathon. |
+| WhatsApp como canal principal | Elimina friccion de adopcion. No hay app que instalar. |
+| Dashboard web interactivo (no solo lectura) | El usuario puede editar su cartera, conectar banco y configurar debito directamente. |
+| Dinari Enterprise API para stocks | Provee datos reales de acciones del mercado americano (sandbox). |
+| Colores unicos por activo en pie chart (paleta de 20) | Evita confusion visual. Cada instrumento tiene un color diferente sin importar la categoria. |
+| `registerInstruments()` para fit score client-side | Permite que el motor de fit score resuelva instrumentos de Supabase y Dinari en el browser sin llamada a API. |
+| N8N como orquestador con AI Agent | Permite flujo conversacional libre sin codigo de estado manual. |
+| Next.js como API backend (no N8N) | Logica de negocio versionada y testeable en codigo. N8N solo orquesta y delega. |
+| Server Components para el dashboard | Datos se leen directamente de Supabase en el servidor. El service_role key nunca llega al browser. |
+| Validacion estricta de 100% | Frontend deshabilita el boton si total != 100%. Backend rechaza con 400 si no suma 100%. |
 | Sin RLS en MVP | Acceso server-side con service_role key. Se activa en iteracion posterior. |
-| Instrumentos como seed data | Elimina dependencia de APIs externas con rate limits. |
 | Transfers mockeados | Evita complejidad regulatoria y reduce scope a lo demostrable en el hackathon. |
-
----
-
-## 14. Pendientes para definir antes de implementar
-
-- Configuracion del numero de WhatsApp Business (requiere cuenta Meta Business verificada).
-- N8N: Cloud vs self-hosted (Cloud es mas rapido para el hackathon).
-- Ventana de contexto del historial de conversacion: configurable via variable de entorno `CONVERSATION_WINDOW_SIZE`, valor inicial sugerido 20 mensajes.
-- Threshold de fit score para disparar alerta proactiva: score actual < 50 **o** caida de mas de 10 puntos respecto al ultimo calculo registrado.
-- Instrumentos y categorias de activos que se incluyen en la primera version.
-- Estrategia de seed data para `instruments` en Supabase.
-- Proveedor LLM alternativo si OpenAI no esta disponible (Anthropic Claude como fallback).
+| Deploy en Vercel | Automatico, serverless, mismo proyecto para web + API. |

@@ -1,6 +1,6 @@
 # Especificacion Funcional
 **Proyecto:** HackITBA 2026
-**Version:** 0.2 (pivot a WhatsApp + N8N)
+**Version:** 0.3
 **Ultima actualizacion:** 2026-03-28
 
 ---
@@ -9,7 +9,10 @@
 
 Una plataforma de smart finance que ayuda al usuario retail a convertir la inversion en un habito sostenible, mediante una estrategia personalizada, automatizacion de aportes y validacion inteligente de su cartera.
 
-El canal principal de interaccion es **WhatsApp**: el usuario no necesita instalar ninguna app ni aprender una interfaz nueva. La experiencia es conversacional, natural y disponible en el canal que todo el mundo ya usa.
+El producto opera en dos canales complementarios:
+
+- **WhatsApp**: canal principal de interaccion conversacional. El usuario hace onboarding, ajusta su cartera, recibe alertas y recomendaciones proactivas sin instalar ninguna app.
+- **Dashboard web**: vista interactiva donde el usuario puede ver su cartera, editarla, conectar su banco y configurar el debito automatico.
 
 El diferencial no es solo recomendar una cartera: es estar encima del cliente, hablar con el en su lenguaje, acompanarlo proactivamente y ayudarlo a sostener buenas decisiones de inversion de forma simple y consistente.
 
@@ -21,7 +24,9 @@ Muchas personas quieren invertir, pero no logran sostener el habito en el tiempo
 
 El problema no es la falta de informacion, sino la falta de constancia. Las decisiones quedan libradas al recuerdo o al momento. Incluso cuando alguien entiende que deberia invertir, no tiene una forma simple de automatizar ese comportamiento y sostenerlo como parte de su rutina.
 
-La solucion resuelve eso con un chatbot en WhatsApp que acompana al inversor: lo perfila, le sugiere una estrategia, le recuerda sus aportes, le avisa cuando su cartera se desalinea y le manda insights utiles sin que el tenga que hacer nada.
+La solucion resuelve eso con:
+- Un chatbot en WhatsApp que acompana al inversor: lo perfila, le sugiere una estrategia, le recuerda sus aportes, le avisa cuando su cartera se desalinea y le manda insights utiles.
+- Un dashboard web donde puede ver su cartera visualmente, editarla con stocks reales (Dinari API), conectar su banco y configurar debito automatico.
 
 ---
 
@@ -32,20 +37,16 @@ La solucion resuelve eso con un chatbot en WhatsApp que acompana al inversor: lo
 | Inversor nuevo | Quiere empezar a invertir pero no sabe como. Necesita una experiencia guiada, simple y que no le exija aprender una app nueva. WhatsApp baja toda la friccion. |
 | Inversor con nocion | Ya tiene experiencia basica. Busca una estrategia alineada a su perfil, visibilidad sobre su cartera y automatizacion de aportes. |
 
-Ambos perfiles comparten la necesidad de invertir con mayor constancia. WhatsApp es el canal comun que elimina la barrera de adopcion.
+Ambos perfiles comparten la necesidad de invertir con mayor constancia. WhatsApp es el canal comun que elimina la barrera de adopcion. El dashboard web complementa con visualizacion y control.
 
 ---
 
 ## 4. Canales del producto
 
-El producto tiene dos superficies:
-
 | Canal | Rol |
 |-------|-----|
-| **WhatsApp** | Canal principal de interaccion. Onboarding, consultas, ajuste de cartera, confirmaciones, alertas y recomendaciones proactivas. |
-| **Dashboard web** | Vista complementaria (solo lectura). Muestra el portfolio activo, metricas historicas, fit score y composicion de forma visual. No tiene flujos de accion. |
-
-El dashboard web es opcional para el usuario. Todo lo que necesita para operar esta en WhatsApp.
+| **WhatsApp** | Canal principal de interaccion conversacional. Onboarding, consultas, ajuste de cartera, confirmaciones, alertas y recomendaciones proactivas. |
+| **Dashboard web** | Vista interactiva. Login con email/password, visualizacion del portfolio (grafico de torta, fit score, returns, insights, aportes), edicion de cartera con stocks de Dinari, conexion de banco y configuracion de debito automatico. |
 
 ---
 
@@ -88,40 +89,6 @@ El agente captura:
 - Monto o porcentaje del ingreso para aportes.
 - Frecuencia del aporte (semanal, quincenal, mensual).
 
-Cuando el agente tiene suficiente informacion, guarda el perfil y avanza automaticamente a la cartera sugerida. No le pregunta al usuario si "ya termino el onboarding": la transicion es fluida y natural.
-
-```mermaid
-sequenceDiagram
-    actor U as Usuario
-    participant WA as WhatsApp
-    participant N8N as N8N AI Agent
-    participant API as Next.js API
-    participant DB as Supabase
-
-    U->>WA: Mensaje inicial libre
-    WA->>N8N: webhook POST
-    N8N->>API: GET /api/profile?phone=...
-    API->>DB: SELECT usuario
-    DB-->>API: no existe
-    API-->>N8N: 404 (sin perfil)
-
-    loop Hasta completar el perfil
-        N8N-->>WA: Pregunta natural (de a una)
-        WA-->>U: Pregunta
-        U->>WA: Respuesta libre
-        WA->>N8N: webhook POST
-    end
-
-    N8N->>API: POST /api/profile (perfil extraído por LLM)
-    API->>DB: INSERT investor_profiles
-    DB-->>API: ok
-    N8N->>API: POST /api/portfolio/suggested
-    API->>DB: SELECT instruments
-    API-->>N8N: composición sugerida + fit score
-    N8N-->>WA: Cartera sugerida + botones de acción
-    WA-->>U: [Aceptar cartera] [Ajustar] [Ver detalle]
-```
-
 ### 5.2 Cartera sugerida
 
 El agente genera una cartera inicial basada en el perfil y la presenta en el chat con:
@@ -132,149 +99,140 @@ El agente genera una cartera inicial basada en el perfil y la presenta en el cha
 - Portfolio Fit Score.
 - Un insight breve del Portfolio Doctor.
 
-La presentacion usa **botones de WhatsApp Business** para las acciones posibles: "Aceptar cartera" / "Quiero ajustarla" / "Ver mas detalle".
-
 ### 5.3 Ajuste conversacional de cartera
 
 Si el usuario quiere personalizar, lo hace hablando: "quiero menos dolar y mas renta fija", "saca las acciones", "pone mas en algo conservador". El agente interpreta el pedido, ajusta los porcentajes, recalcula el Fit Score y muestra la nueva composicion.
 
-No hay sliders ni interfaz grafica. Los ajustes son iterativos y conversacionales. El agente puede sugerir cambios si detecta que la cartera queda fuera de perfil.
-
-Al terminar cada ajuste, el agente muestra botones: "Confirmar esta cartera" / "Seguir ajustando".
-
-```mermaid
-sequenceDiagram
-    actor U as Usuario
-    participant WA as WhatsApp
-    participant N8N as N8N AI Agent
-    participant API as Next.js API
-
-    U->>WA: "quiero menos dólar y más renta fija"
-    WA->>N8N: webhook POST
-    N8N->>API: POST /api/portfolio/fit-score (nueva composición)
-    API-->>N8N: score + dimensiones
-    N8N->>API: POST /api/portfolio/insights
-    API-->>N8N: insights del Doctor
-    N8N-->>WA: Nueva composición + Score + insight
-    WA-->>U: Resultado + [Confirmar] [Seguir ajustando]
-```
-
 ### 5.4 Portfolio Fit Score
 
-El agente calcula y comunica el score en lenguaje simple luego de cada cambio significativo a la cartera.
+Score de 0 a 100 que mide que tan alineada esta la cartera con el perfil del inversor. Se comunica en lenguaje simple luego de cada cambio.
 
-Ejemplos de como lo presenta:
-- "Tu cartera tiene un score de 82/100. Esta bien alineada con tu perfil moderado."
-- "Score: 41/100. Esta cartera es bastante mas agresiva de lo que tu perfil indica. Te recomiendo bajar la exposicion a renta variable."
+| Rango | Etiqueta |
+|-------|----------|
+| 85-100 | Muy alineado |
+| 65-84 | Alineado |
+| 45-64 | Moderadamente fuera de perfil |
+| 0-44 | Fuera de perfil |
 
 ### 5.5 Portfolio Doctor
 
-Insights accionables generados por IA sobre la cartera actual. Se presentan como parte de la conversacion, no como un panel separado.
-
-Ejemplos:
-- "Tenes sobreexposicion en un solo sector. Considera diversificar."
-- "Esta composicion es mas agresiva de lo que tu perfil indica."
-- "Tu cartera tiene baja diversificacion para un horizonte de mas de 3 años."
+Insights accionables generados sobre la cartera actual. Se presentan como parte de la conversacion o en el dashboard.
 
 ### 5.6 What-if Simulator
 
-El usuario puede explorar escenarios hablando naturalmente:
-- "Que pasaria si aporto el doble por 6 meses?"
-- "Y si bajo la proporcion de dolar?"
-- "Como me iria con una cartera mas agresiva?"
-
-El agente responde con el impacto simulado en rentabilidad historica, volatilidad y Fit Score.
-
-### 5.7 Confirmacion y aportes automaticos
-
-Al confirmar la cartera, el agente presenta un resumen final con botones de WhatsApp Business para confirmar. Luego registra la configuracion de aportes automaticos.
-
-En el MVP, los aportes automaticos estan **mockeados**: el sistema simula la ejecucion en las fechas configuradas y notifica al usuario por WhatsApp ("Tu aporte mensual de $X fue procesado.").
+El usuario puede explorar escenarios hablando naturalmente: "que pasaria si aporto el doble?", "como me iria con una cartera mas agresiva?".
 
 ---
 
-## 6. Flows proactivos (bot → usuario)
+## 6. Dashboard web
 
-El bot manda mensajes al usuario sin que este haya preguntado, en dos escenarios:
+### 6.1 Login
 
-### 6.1 Revision semanal de cartera
+- Formulario de email + password (mock, sin hash ni JWT).
+- Cookie `user_id` HttpOnly para sesion.
+- Usuario demo pre-cargado: `demo@hackitba.com` / `demo123`.
+- Boton "Salir" para cerrar sesion.
+
+### 6.2 Dashboard principal (`/`)
+
+Muestra la cartera activa del usuario logueado:
+
+| Componente | Descripcion |
+|------------|-------------|
+| **Warning banner** | Aparece si no hay banco conectado o debito automatico sin configurar. Boton para ir a `/debit/setup`. |
+| **Historical Returns** | Retornos ponderados a 1 mes, 3 meses, 1 año. |
+| **Composicion (pie chart)** | Grafico de torta interactivo con colores unicos por activo (nunca repetidos). |
+| **Fit Score Widget** | Score circular con breakdown por dimension. |
+| **Portfolio Doctor** | Insights de tipo warning, info y positive. |
+| **Contribution History** | Tabla de aportes historicos + proximo aporte programado. |
+| **Botones de accion** | "Editar cartera", "Configurar debito", "Salir". |
+
+### 6.3 Editor de cartera (`/portfolio/edit`)
+
+Pagina interactiva para modificar la composicion de la cartera:
+
+- **Columna izquierda**: grafico de torta en tiempo real + Fit Score live + indicador de total (debe sumar 100%) + boton guardar.
+- **Columna derecha**: nombre de la cartera + lista de instrumentos con porcentajes editables.
+- **Seccion inferior (ancho completo)**: "Agregar activos" con dos tabs:
+  - **Locales**: instrumentos de la base de datos (8 instrumentos argentinos).
+  - **Stocks (Dinari)**: acciones del mercado americano via Dinari Enterprise API (sandbox). Se puede buscar por nombre o simbolo. Al seleccionar un stock se agrega a la cartera con 0%.
+- Validacion estricta: los porcentajes deben sumar exactamente 100% tanto en frontend como backend.
+- Al guardar: archiva la cartera anterior, crea una nueva con status `active`, calcula fit score, y si hay stocks de Dinari nuevos los crea como instrumentos en la base de datos.
+
+### 6.4 Conexion de banco y debito automatico (`/debit/setup`)
+
+Flujo de dos pasos:
+
+**Paso 1 — Seleccion de banco:**
+- Grilla de 20 bancos argentinos (Nacion, Galicia, BBVA, Brubank, Macro, Santander, etc.).
+- Al seleccionar se guarda en la BD y avanza al paso 2.
+
+**Paso 2 — Configuracion del debito:**
+- Monto en pesos (input numerico).
+- Frecuencia: semanal, quincenal o mensual (selector de botones).
+- Fecha del primer debito (date picker, desde hoy en adelante).
+- Resumen legible: "Se debitaran $10.000 de forma mensual desde Brubank, comenzando el 5 de abril de 2026."
+- Boton "Activar debito automatico" que guarda la configuracion en el portfolio activo.
+
+---
+
+## 7. Flows proactivos (bot → usuario)
+
+### 7.1 Revision semanal de cartera
 
 Una vez por semana, el sistema evalua el portfolio activo del usuario:
 - Calcula si el Fit Score bajo significativamente.
 - Detecta desbalance o sobreexposicion.
 - Si encuentra algo relevante, manda un mensaje con el insight y una sugerencia accionable.
-- Si todo esta bien, no molesta al usuario.
 
-Ejemplo de mensaje proactivo:
-> "Hola! Revise tu cartera esta semana. Tu exposicion en renta variable subio al 70%, lo que esta por encima de tu perfil moderado. Queres que lo rebalanceemos?"
-
-Botones sugeridos: "Si, rebalancear" / "Dejalo asi" / "Ver detalle"
-
-```mermaid
-flowchart TD
-    T([Lunes 9am]) --> GET[Obtiene todos los\nportfolios activos]
-    GET --> LOOP[Para cada usuario]
-    LOOP --> SCORE[Calcula Fit Score actual]
-    SCORE --> CHECK{Score menor a 50\no bajó más de 10 pts?}
-    CHECK -->|No| SKIP[No hace nada\nno molesta al usuario]
-    CHECK -->|Sí| INSIGHT[Genera insight\ncon el Portfolio Doctor]
-    INSIGHT --> SEND[Manda mensaje proactivo\ncon botones de acción]
-    SKIP --> NEXT[Siguiente usuario]
-    SEND --> NEXT
-```
-
-### 6.2 Recordatorio de aporte (MVP)
+### 7.2 Recordatorio de aporte
 
 Cuando llega la fecha de aporte configurada, el bot notifica al usuario y simula la ejecucion del debito.
 
-```mermaid
-flowchart TD
-    T([Trigger diario]) --> GET[Obtiene aportes\nque vencen hoy]
-    GET --> CHECK{¿Hay aportes\nprogramados?}
-    CHECK -->|No| END([Fin])
-    CHECK -->|Sí| LOOP[Para cada aporte]
-    LOOP --> MOCK[Simula ejecución\ndel aporte]
-    MOCK --> UPDATE[Actualiza\nnext_contribution_date]
-    UPDATE --> NOTIFY[Notifica al usuario\npor WhatsApp]
-    NOTIFY --> NEXT[Siguiente aporte]
-    NEXT --> END
-```
+---
+
+## 8. Integracion con Dinari
+
+El editor de cartera permite agregar stocks del mercado americano obtenidos de la **Dinari Enterprise API** (sandbox):
+
+- Endpoint: `GET /api/v2/market_data/stocks/`
+- Muestra: nombre, simbolo, logo, estado de tradability.
+- Al guardar una cartera con stocks de Dinari, se crean como instrumentos en la BD con:
+  - `category`: `renta_variable`
+  - `risk_level`: `high`
+  - `returns` mockeados (2%, 6%, 25%)
+  - `volatility`: 15%
 
 ---
 
-## 7. Features del MVP
+## 9. Features del MVP
 
-| Feature | Canal | Estado en MVP |
-|---------|-------|---------------|
+| Feature | Canal | Estado |
+|---------|-------|--------|
 | Onboarding conversacional libre | WhatsApp | Incluido |
 | Extraccion de perfil por LLM | N8N / AI Agent | Incluido |
 | Cartera sugerida con botones de accion | WhatsApp | Incluido |
 | Ajuste conversacional de cartera | WhatsApp | Incluido |
-| Portfolio Fit Score en el chat | WhatsApp | Incluido |
-| Portfolio Doctor con insights de AI | WhatsApp | Incluido |
+| Portfolio Fit Score | WhatsApp + Web | Incluido |
+| Portfolio Doctor con insights | WhatsApp + Web | Incluido |
 | What-if Simulator conversacional | WhatsApp | Incluido |
-| Confirmacion y guardado de cartera | WhatsApp | Incluido |
+| Confirmacion y guardado de cartera | WhatsApp + Web | Incluido |
 | Aporte automatico mockeado | WhatsApp | Incluido |
 | Revision semanal proactiva | N8N (scheduled) | Incluido |
-| Dashboard web (solo lectura) | Web | Incluido |
+| Login mock (email/password) | Web | Incluido |
+| Dashboard interactivo | Web | Incluido |
+| Editor de cartera con Dinari stocks | Web | Incluido |
+| Conexion de banco (mock) | Web | Incluido |
+| Configuracion de debito automatico | Web | Incluido |
 | Crowd intelligence por perfiles similares | - | Roadmap |
 | Alerta de mercado en tiempo real | - | Roadmap |
-| Debito automatico real | - | Roadmap |
+| Debito automatico real (integracion bancaria) | - | Roadmap |
 | Marketplace de carteras | - | Roadmap |
 | Inversion tokenizada | - | Roadmap |
 
 ---
 
-## 8. Experiencia con WhatsApp Business
-
-- Las **opciones de accion** siempre usan botones o listas de WhatsApp Business. El usuario nunca tiene que escribir "1" o "2" para elegir una opcion.
-- Las **preguntas abiertas** son libres: el usuario escribe lo que quiere y el LLM interpreta.
-- Los **mensajes del bot** son cortos, en primera persona y sin jerga financiera tecnica.
-- El bot tiene personalidad definida: cercana, directa, sin sonar a un banco.
-
----
-
-## 9. Modelo de negocio
+## 10. Modelo de negocio
 
 ### Tier gratuito
 - Onboarding completo.
@@ -294,7 +252,7 @@ flowchart TD
 
 ---
 
-## 10. Wording y posicionamiento
+## 11. Wording y posicionamiento
 
 | Usar | Evitar |
 |------|--------|
@@ -305,38 +263,43 @@ flowchart TD
 
 ---
 
-## 11. Criterios de exito del MVP
+## 12. Criterios de exito del MVP
 
-- El usuario puede completar el flujo completo de punta a punta por WhatsApp: onboarding → cartera sugerida → ajuste → confirmacion.
+- El usuario puede loguearse en el dashboard y ver su cartera con metricas reales de la BD.
+- El usuario puede editar su cartera, agregar stocks de Dinari, y guardar con validacion de 100%.
+- El usuario puede conectar un banco y configurar debito automatico (frecuencia, monto, fecha).
+- El grafico de torta se actualiza en tiempo real al cambiar los porcentajes.
+- El Fit Score se recalcula live al editar la cartera.
+- El flujo completo de WhatsApp funciona de punta a punta: onboarding → cartera → confirmacion.
 - El bot interpreta correctamente el perfil del usuario a partir de una conversacion libre.
-- El Portfolio Fit Score se comunica en lenguaje simple despues de cada cambio.
-- El Portfolio Doctor genera al menos un insight relevante para cualquier composicion.
-- El What-if Simulator responde con impacto visible ante preguntas naturales.
 - El flow proactivo semanal envia un mensaje coherente con el estado real del portfolio.
 - La experiencia es entendible sin conocimiento financiero previo.
 
 ---
 
-## 12. Restricciones y decisiones tomadas
+## 13. Restricciones y decisiones tomadas
 
-- El MVP no ejecuta inversiones reales ni integra debito automatico real.
+- El MVP no ejecuta inversiones reales ni integra debito automatico real con bancos.
 - El MVP no administra fondos regulados. Opera con carteras de simulacion y recomendacion.
 - Los datos de rentabilidad historica son informativos y no constituyen asesoramiento financiero regulado.
 - La AI actua como capa de explicacion y alertas, no como asesor financiero ni entidad regulada.
-- El dashboard web es de solo lectura: no tiene flujos de onboarding ni edicion de cartera.
+- La autenticacion es mock (plain text password, cookie session). No apta para produccion.
+- Los stocks de Dinari provienen del sandbox; en produccion se usaria la API de produccion.
 
 ---
 
-## 13. Roadmap de producto
+## 14. Roadmap de producto
 
 ### Fase 1 (MVP - HackITBA 2026)
 - Onboarding conversacional por WhatsApp.
 - Cartera sugerida y ajuste conversacional.
-- Portfolio Fit Score y Portfolio Doctor en el chat.
+- Portfolio Fit Score y Portfolio Doctor.
 - What-if Simulator conversacional.
 - Aporte automatico mockeado.
 - Revision semanal proactiva.
-- Dashboard web de solo lectura.
+- Dashboard web interactivo con login.
+- Editor de cartera con stocks de Dinari.
+- Conexion de banco y configuracion de debito automatico.
 
 ### Fase 2
 - Crowd intelligence por perfiles similares.
@@ -347,4 +310,4 @@ flowchart TD
 ### Fase 3
 - Marketplace curado de estrategias.
 - Integracion con partners regulados para ejecucion real.
-- Debito automatico e inversion tokenizada con partner.
+- Debito automatico real e inversion tokenizada con partner.
