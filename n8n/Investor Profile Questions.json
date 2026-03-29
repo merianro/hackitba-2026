@@ -1,0 +1,707 @@
+{
+  "name": "Investor Profile Questions",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"phone_number_id\": \"1080786875116050\",\n  \"to\": \"5492215742004\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -112,
+        -192
+      ],
+      "id": "a9d5e08a-ecc5-4ac8-91d0-ad93e27fa8aa",
+      "name": "Start"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "¿Cómo definís tu conocimiento sobre las distintas alternativas de inversión en el Mercado de Capitales?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Nivel de conocimiento",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"con_1\",\"title\":\"1 - Nulo\",\"description\":\"No conozco ni realicé inversiones\"},{\"id\":\"con_2\",\"title\":\"2 - Poco\",\"description\":\"Solo utilizo servicios bancarios (ej. Plazo Fijo)\"},{\"id\":\"con_3\",\"title\":\"3 - Mínimo\",\"description\":\"No invertí fuera del banco, pero conozco opciones\"},{\"id\":\"con_4\",\"title\":\"4 - Intermedio\",\"description\":\"Realicé inversiones ocasionales y conozco los riesgos\"},{\"id\":\"con_5\",\"title\":\"5 - Experto\",\"description\":\"Mucho conocimiento y experiencia en inversiones\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        -192
+      ],
+      "id": "f5868b72-f014-48cf-8ee2-3ea2bc0146d1",
+      "name": "Set P1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        -192
+      ],
+      "id": "383a0a52-f55d-49f7-b4cb-e6a12d3a4adf",
+      "name": "P1 - Conocimiento"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $('Start').item.json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $('Start').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "¿Cuánta experiencia tenés invirtiendo?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Experiencia inversora",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"exp_1\",\"title\":\"1 - Ninguna\",\"description\":\"Como mucho compré/vendí moneda extranjera en el banco\"},{\"id\":\"exp_2\",\"title\":\"2 - Mínima\",\"description\":\"Realicé depósitos en Plazo Fijo y/o compra/venta de divisas\"},{\"id\":\"exp_3\",\"title\":\"3 - Intermedia\",\"description\":\"Invertí en Fondos Comunes de Inversión\"},{\"id\":\"exp_4\",\"title\":\"4 - Avanzada\",\"description\":\"Realicé compra/venta de acciones y/o bonos\"},{\"id\":\"exp_5\",\"title\":\"5 - Experto\",\"description\":\"Invertí en derivados financieros\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        32
+      ],
+      "id": "e9e94016-dc09-4866-8770-0fde8cac754c",
+      "name": "Set P2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        32
+      ],
+      "id": "fd04de3f-aa02-4f7f-9b60-1b23c04d3aca",
+      "name": "P2 - Experiencia"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $('Start').item.json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $('Start').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "¿Qué porcentaje de tu ingreso podés ahorrar mensualmente?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Capacidad de ahorro",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"aho_1\",\"title\":\"1 - Hasta el 10%\"},{\"id\":\"aho_2\",\"title\":\"2 - Hasta el 25%\"},{\"id\":\"aho_3\",\"title\":\"3 - Hasta el 50%\"},{\"id\":\"aho_4\",\"title\":\"4 - Hasta el 75%\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        240
+      ],
+      "id": "82339d15-6b56-42c5-b01c-03fb76b6dcc6",
+      "name": "Set P3"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        240
+      ],
+      "id": "0d7ed3da-3c90-4cc9-b588-2a5324cedde2",
+      "name": "P3 - Ahorro"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $('Start').item.json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $('Start').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "¿Qué porcentaje de tus ahorros invertirías?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Porcentaje a invertir",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"inv_1\",\"title\":\"1 - Hasta el 10%\"},{\"id\":\"inv_2\",\"title\":\"2 - Hasta el 25%\"},{\"id\":\"inv_3\",\"title\":\"3 - Hasta el 50%\"},{\"id\":\"inv_4\",\"title\":\"4 - Hasta el 75%\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        448
+      ],
+      "id": "a29b3d07-7010-4f32-a3b2-107d5b2bf0fa",
+      "name": "Set P4"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        448
+      ],
+      "id": "1f1c2d38-a689-4c81-a018-6c667f1ef6f6",
+      "name": "P4 - % a invertir"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $('Start').item.json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $('Start').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "¿Por cuánto tiempo estarías dispuesto a mantener una inversión?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Horizonte temporal",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"hor_1\",\"title\":\"1 - Menos de 1 año\"},{\"id\":\"hor_2\",\"title\":\"2 - Entre 1 y 5 años\"},{\"id\":\"hor_3\",\"title\":\"3 - Entre 5 y 10 años\"},{\"id\":\"hor_4\",\"title\":\"4 - Más de 10 años\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        704
+      ],
+      "id": "e43ca1e7-ca1a-48a7-9ba1-987c8c9d7e55",
+      "name": "Set P5"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        704
+      ],
+      "id": "ae140b04-fe11-417b-8f42-74af5868ea7a",
+      "name": "P5 - Horizonte"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $('Start').item.json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $('Start').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "¿Qué buscás al invertir?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Objetivo de inversión",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"obj_1\",\"title\":\"1 - Mantener valor\",\"description\":\"Mantener el valor de mis ahorros\"},{\"id\":\"obj_2\",\"title\":\"2 - Ganarle inflación\",\"description\":\"Superar la tasa de inflación\"},{\"id\":\"obj_3\",\"title\":\"3 - Rendimiento moderado\",\"description\":\"Entre inflación y hasta 5% más\"},{\"id\":\"obj_4\",\"title\":\"4 - Máximo rendimiento\",\"description\":\"Mayor a 5% sobre inflación, asumiendo más riesgo\"}]\n\n",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        912
+      ],
+      "id": "5e46132f-ecda-47da-baa8-9e19855edc6b",
+      "name": "Set P6"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        912
+      ],
+      "id": "1bed93ce-256b-4756-9778-d6cd62707c8f",
+      "name": "P6 - Objetivo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "phone_number_id",
+              "value": "={{ $('Start').item.json.phone_number_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "to",
+              "value": "={{ $('Start').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "message_body",
+              "value": "Si observás una baja importante en el valor de uno de tus activos ¿Qué proporción de tus inversiones mantendrías?",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "button_text",
+              "value": "Seleccioná",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "section_title",
+              "value": "Tolerancia al riesgo",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "rows",
+              "value": "=[{\"id\":\"rie_1\",\"title\":\"1 - Vendo todo\",\"description\":\"Me retiro inmediatamente\"},{\"id\":\"rie_2\",\"title\":\"2 - Rescato parte\",\"description\":\"El resto lo muevo a productos de menor riesgo\"},{\"id\":\"rie_3\",\"title\":\"3 - Mantengo todo\",\"description\":\"Mi estrategia no varía, asumo rentabilidades negativas\"},{\"id\":\"rie_4\",\"title\":\"4 - Compro más\",\"description\":\"Sumo capital para comprar el producto a la baja\"}]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        1136
+      ],
+      "id": "77bb2ad3-38b8-422c-9047-c7298aaa9060",
+      "name": "Set P7"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "zTfq0kFz6JpqGqrr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zTfq0kFz6JpqGqrr",
+          "cachedResultName": "Send List"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        1136
+      ],
+      "id": "fb6016eb-d03b-443d-bac6-f2547208cd5d",
+      "name": "P7 - Tolerancia riesgo"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "phone_number_id": "1080786875116050",
+          "to": "5492215742004"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Set P1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P1": {
+      "main": [
+        [
+          {
+            "node": "P1 - Conocimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P1 - Conocimiento": {
+      "main": [
+        [
+          {
+            "node": "Set P2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P2": {
+      "main": [
+        [
+          {
+            "node": "P2 - Experiencia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P2 - Experiencia": {
+      "main": [
+        [
+          {
+            "node": "Set P3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P3": {
+      "main": [
+        [
+          {
+            "node": "P3 - Ahorro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P3 - Ahorro": {
+      "main": [
+        [
+          {
+            "node": "Set P4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P4": {
+      "main": [
+        [
+          {
+            "node": "P4 - % a invertir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P4 - % a invertir": {
+      "main": [
+        [
+          {
+            "node": "Set P5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P5": {
+      "main": [
+        [
+          {
+            "node": "P5 - Horizonte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P5 - Horizonte": {
+      "main": [
+        [
+          {
+            "node": "Set P6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P6": {
+      "main": [
+        [
+          {
+            "node": "P6 - Objetivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "P6 - Objetivo": {
+      "main": [
+        [
+          {
+            "node": "Set P7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set P7": {
+      "main": [
+        [
+          {
+            "node": "P7 - Tolerancia riesgo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f861ee50-01c1-478d-90e8-d6c406d6f95c",
+  "meta": {
+    "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"
+  },
+  "id": "bbYgoF6VZw9ztser",
+  "tags": []
+}

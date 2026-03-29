@@ -1,0 +1,78 @@
+{
+  "name": "Send Message",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"phone_number_id\": \"1080786875116050\",\n  \"to\": \"5492215742004\",\n  \"text\": \"Abacus\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "03d239f1-7f40-41f5-a2b5-3e4150addc34",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $json.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $json.to }}",
+        "textBody": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        0
+      ],
+      "id": "2203371a-fccd-42ea-b526-914106d691cd",
+      "name": "Send message",
+      "webhookId": "ed70d6fa-63b5-4ead-9ada-34cbcff67fa2",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "hbWEMMq5lu12xXhv",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "phone_number_id": "1080786875116050",
+          "to": "5492215742004",
+          "text": "Abacus"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8732d2a1-c153-4e7e-8e62-6f69daf81462",
+  "meta": {
+    "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"
+  },
+  "id": "bahDvRNCeUh226bt",
+  "tags": []
+}
