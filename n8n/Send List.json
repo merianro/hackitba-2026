@@ -1,0 +1,131 @@
+{
+  "name": "Send List",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"phone_number_id\": \"1080786875116050\",\n  \"to\": \"5492215742004\",\n  \"message_body\": \"text\",\n  \"button_text\": \"Menú\",\n  \"section_title\": \"Opciones\",\n  \"rows\": [\n    {\n      \"id\": \"asegurado\",\n      \"title\": \"Soy Asegurado/a\"\n    },\n    {\n      \"id\": \"cotizar\",\n      \"title\": \"Quiero contratar/cotizar\",\n      \"description\": \"Quiero contratar o cotizar un seguro\"\n    },\n    {\n      \"id\": \"no_asegurado\",\n      \"title\": \"No soy Asegurado/a\",\n      \"description\": \"Tuve un siniestro con un cliente de Rivadavia\"\n    },\n    {\n      \"id\": \"tallerista\",\n      \"title\": \"Soy tallerista\",\n      \"description\": \"Tallerista / Autopartista\"\n    },\n    {\n      \"id\": \"otro\",\n      \"title\": \"Otro\"\n    }\n  ]\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "54a1b8ec-2fa2-419a-bb1e-9f43d4ded0cb",
+      "name": "Send List"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v20.0/{{ $('Send List').item.json.phone_number_id }}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        432,
+        0
+      ],
+      "id": "5c11f67b-8305-4e34-bdcb-0f4f6f94e3ee",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "GHiZAwQJBNgR3yQe",
+          "name": "Permanent Token API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nreturn [{\n  json: {\n    body: {\n      messaging_product: \"whatsapp\",\n      to: input.to,\n      type: \"interactive\",\n      interactive: {\n        type: \"list\",\n        body: { text: input.message_body },\n        action: {\n          button: input.button_text,\n          sections: [\n            {\n              title: input.section_title,\n              rows: input.rows\n            }\n          ]\n        }\n      }\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "05515106-2951-479b-81b6-0d566168a276",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {
+    "Send List": [
+      {
+        "json": {
+          "phone_number_id": "1080786875116050",
+          "to": "5492215742004",
+          "message_body": "text",
+          "button_text": "Menú",
+          "section_title": "Opciones",
+          "rows": [
+            {
+              "id": "asegurado",
+              "title": "Soy Asegurado/a"
+            },
+            {
+              "id": "cotizar",
+              "title": "Quiero contratar/cotizar",
+              "description": "Quiero contratar o cotizar un seguro"
+            },
+            {
+              "id": "no_asegurado",
+              "title": "No soy Asegurado/a",
+              "description": "Tuve un siniestro con un cliente de Rivadavia"
+            },
+            {
+              "id": "tallerista",
+              "title": "Soy tallerista",
+              "description": "Tallerista / Autopartista"
+            },
+            {
+              "id": "otro",
+              "title": "Otro"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Send List": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "95d6f1ec-f324-442d-8f13-2e2beb38140c",
+  "meta": {
+    "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"
+  },
+  "id": "zTfq0kFz6JpqGqrr",
+  "tags": []
+}

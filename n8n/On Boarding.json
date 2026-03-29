@@ -1,0 +1,29 @@
+{
+  "name": "On Boarding",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        -64
+      ],
+      "id": "76d60a06-ad1a-4ed0-b72a-1198886da24b",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9570cc4f-7f17-4f1c-bbe3-ea0ee7deeda2",
+  "meta": {
+    "instanceId": "1364f14f3968c7cc421a947eecfd88963369c506041a7965cd7c15540346d177"
+  },
+  "id": "CObpRHlL2FqjPayQ",
+  "tags": []
+}
