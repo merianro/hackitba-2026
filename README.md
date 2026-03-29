@@ -3,7 +3,7 @@
 Plataforma de smart finance que ayuda al inversor retail a armar, personalizar y validar una cartera de inversión personalizada, con insights generados por IA. Incluye dashboard web (Next.js) y flujos conversacionales en WhatsApp (n8n).
 
 ### Chatea con TITA 
-Ir a [1178252816](https://wa.me/1178252816)
+Ir a [+5491178252816](https://wa.me/5491178252816)
 
 ## Flujo de la app
 
