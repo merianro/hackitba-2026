@@ -27,6 +27,51 @@ const BANKS = [
   { id: "patagonia", name: "Banco Patagonia", color: "#00529b" },
 ];
 
+/** Archivos en `public/banks/*.svg` (resto: inicial sobre color) */
+const BANK_LOGO_SRC: Partial<Record<string, string>> = {
+  nacion: "/banks/banco-nacion.svg",
+  credicoop: "/banks/banco-credicoop.svg",
+  ciudad: "/banks/banco-ciudad.svg",
+  galicia: "/banks/banco-galicia.svg",
+  brubank: "/banks/brubank.svg",
+  comafi: "/banks/banco-comafi.svg",
+  bica: "/banks/banco-bica.svg",
+  piano: "/banks/banco-piano.svg",
+  santander: "/banks/banco-santander.svg",
+  macro: "/banks/banco-macro.svg",
+  supervielle: "/banks/banco-supervielle.svg",
+  patagonia: "/banks/banco-patagonia.svg",
+};
+
+function BankLogoMark({
+  bankId,
+  name,
+  color,
+}: {
+  bankId: string;
+  name: string;
+  color: string;
+}) {
+  const src = BANK_LOGO_SRC[bankId];
+  if (src) {
+    return (
+      <div className="w-10 h-10 rounded-xl border border-gray-100 bg-white flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt="" className="w-full h-full object-contain" />
+      </div>
+    );
+  }
+  return (
+    <span
+      className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+      style={{ background: color }}
+      aria-hidden
+    >
+      {name.charAt(0)}
+    </span>
+  );
+}
+
 const FREQUENCY_OPTIONS = [
   { value: "weekly", label: "Semanal" },
   { value: "biweekly", label: "Quincenal" },
@@ -177,12 +222,7 @@ export function DebitSetupForm({
                     : "border-gray-200 bg-white hover:border-gray-300"
                 } disabled:opacity-50`}
               >
-                <span
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-                  style={{ background: bank.color }}
-                >
-                  {bank.name.charAt(0)}
-                </span>
+                <BankLogoMark bankId={bank.id} name={bank.name} color={bank.color} />
                 <span className="text-xs font-medium text-gray-700 text-center leading-tight">
                   {bank.name}
                 </span>
@@ -198,12 +238,7 @@ export function DebitSetupForm({
           {/* Connected bank */}
           {bankInfo && (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 flex items-center gap-4">
-              <span
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-                style={{ background: bankInfo.color }}
-              >
-                {bankInfo.name.charAt(0)}
-              </span>
+              <BankLogoMark bankId={bankInfo.id} name={bankInfo.name} color={bankInfo.color} />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-emerald-800">{bankInfo.name}</p>
                 <p className="text-xs text-emerald-600">Banco conectado</p>
