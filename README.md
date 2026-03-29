@@ -1,6 +1,8 @@
 # Smart Portfolio Builder — HackITBA 2026
 
-Plataforma de smart finance que ayuda al inversor retail a armar, personalizar y validar una cartera de inversión personalizada, con insights generados por IA. Incluye dashboard web (Next.js) y flujos conversacionales en WhatsApp (n8n).
+Tita es un agente de smart finance diseñado para el inversor retail. Su misión no es solo recomendar dónde poner el dinero, sino resolver dos problemas claves detrás de las finanzas personales, como lo son la falta de constancia y el entendimiento del mundo bursatil
+A través de una combinación estratégica entre una interfaz conversacional por WhatsApp y un dashboard web de control, Tita acompaña al usuario de forma proactiva, ayudándolo a perfilarse, automatizar sus aportes y mantener una cartera saludable alineada a sus objetivos, todo sin la fricción de aprender a usar una aplicación compleja.
+Este repositorio incluye dashboard web (Next.js) y flujos conversacionales en WhatsApp (n8n).
 
 ## Chatea con TITA 
 Ir a [+5491178252816](https://wa.me/5491178252816)
